@@ -15,21 +15,23 @@ $font-size: 0.7rem;
   @include shadow-variant(.05rem);
   padding: $unit-2 $unit-4;
 
+  .form-horizontal { padding: 0; }
+
   .d-flex { align-items: center; }
   .text-nowrap { white-space: nowrap; }
   .tooltip::after { white-space: pre-line; width: 440px; }
 
   .payment.columns {
     margin: 0 (-$unit-1);
-    &:not(:first-child) { margin-top: $unit-6; }
     .column { padding: 0 $unit-1; }
-    .d-flex select { flex: 1; }
+    &:not(:nth-child(2)) { margin-top: $unit-6; }
+    .d-flex input { flex: 1; }
   }
 
   input[type="date"]::-webkit-clear-button { display: none; }
   input[type="date"]::-webkit-inner-spin-button { display: none; }
 
-  #add-button:not(:first-child) { margin-top: $unit-6; }
+  #add-button:not(:nth-child(2)) { margin-top: $unit-6; }
 }
 
 #table-wrapper {
@@ -37,9 +39,16 @@ $font-size: 0.7rem;
   margin-top: $unit-4;
   padding: $unit-2 $unit-4;
 
+  table { width: 100%; }
+  table tr:last-child td { border-bottom: none; }
   table th, td {
-    padding: $unit-1;
+    padding: $unit-1 $unit-2;
   }
+}
+
+#error {
+  @include shadow-variant(.05rem);
+  margin-top: $unit-4;
 }
 
 #credits-list {

@@ -11,12 +11,14 @@ class App extends React.Component {
     render() {
         return (
             <div className="columns">
-                <div className="column col-7">
+                <div className="column col-8">
                     <Form />
-                    {/*<Table />*/}
                 </div>
-                <div className="column col-5">
+                <div className="column col-4">
                     <Credits />
+                </div>
+                <div className="column col-12">
+                    <Table />
                 </div>
             </div>
         );
