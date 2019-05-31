@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {selectors} from "./store";
+import {selectors} from "./reducer";
 import {formatDate} from './misc';
 
 class Table extends React.Component {
@@ -17,9 +17,11 @@ class Table extends React.Component {
         if (calculation.data.length === 0)
             return null;
 
-        const totalLoan = calculation.data.reduce((acc, val) => acc + val.loan, 0).toFixed(2);
-        const totalInterest = calculation.data.reduce((acc, val) => acc + val.interest, 0).toFixed(2);
-        const total = calculation.data.reduce((acc, val) => acc + val.pmt, 0).toFixed(2);
+        const totalLoan = calculation.data.reduce((acc, val) => acc + val.loan || 0, 0).toFixed(2);
+        const totalInterest = calculation.data.reduce((acc, val) => acc + val.interest || 0, 0).toFixed(2);
+        const total = calculation.data.reduce((acc, val) => acc + val.total || 0, 0).toFixed(2);
+
+        let counter = 0;
 
         return (
             <div id="table-wrapper">
@@ -35,13 +37,18 @@ class Table extends React.Component {
                     </tr>
                     </thead>
                     <tbody>
-                    {calculation.data.map((item, i) =>
-                        <tr key={i}>
-                            <td>{i+1}</td>
+                    {calculation.data.map((item, i) => item.error
+                        ? <tr key={i} className='text-error'>
+                            <td>{item.type === 'regular' ? ++counter : null}</td>
+                            <td>{formatDate(item.date)}</td>
+                            <td colSpan={4}>{item.error}</td>
+                        </tr>
+                        : <tr key={i} className={item.type === 'extra' ? 'text-success' : null}>
+                            <td>{item.type === 'regular' ? ++counter : null}</td>
                             <td>{formatDate(item.date)}</td>
                             <td>{item.loan.toFixed(2)}</td>
                             <td>{item.interest.toFixed(2)}</td>
-                            <td>{item.pmt.toFixed(2)}</td>
+                            <td>{item.total.toFixed(2)}</td>
                             <td>{item.balance.toFixed(2)}</td>
                         </tr>
                     )}

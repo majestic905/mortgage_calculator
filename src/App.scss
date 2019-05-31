@@ -21,10 +21,17 @@ $font-size: 0.7rem;
   .text-nowrap { white-space: nowrap; }
   .tooltip::after { white-space: pre-line; width: 440px; }
 
-  .payment.columns {
+  .payment {
+    align-items: flex-start;
+    &:not(:nth-child(2)) { margin-top: $unit-6; }
+  }
+  .payment-id {
+    position: relative;
+    top: .5em;
+  }
+  .payment-fields {
     margin: 0 (-$unit-1);
     .column { padding: 0 $unit-1; }
-    &:not(:nth-child(2)) { margin-top: $unit-6; }
     .d-flex input { flex: 1; }
   }
 
@@ -54,4 +61,9 @@ $font-size: 0.7rem;
 #credits-list {
   transform: none;
   h3 { margin-bottom: 0; }
+  #app-version {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
 }

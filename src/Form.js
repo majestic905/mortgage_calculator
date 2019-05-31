@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {selectors, actions} from "./store";
+import {selectors, actions} from "./reducer";
 
 
 class Form extends React.Component {
@@ -45,30 +45,30 @@ class Form extends React.Component {
                 <div className="form-horizontal">
                     <div className="form-group">
                         <div className="col-4 col-sm-12">
-                            <label className="form-label" htmlFor="creditSum">Сумма кредита (руб.)</label>
+                            <label className="form-label" htmlFor="sum">Сумма кредита (руб.)</label>
                         </div>
                         <div className="col-8 col-sm-12 d-flex">
-                            <input required type="number" min="0" step="1" name="creditSum" id="creditSum" className="form-input" value={credit.creditSum} onChange={this.onChange}/>
+                            <input required type="number" min="0" step="1" name="sum" id="sum" className="form-input" value={credit.sum} onChange={this.onChange}/>
                             <span className="ml-2 text-nowrap">рублей</span>
                         </div>
                     </div>
 
                     <div className="form-group">
                         <div className="col-4 col-sm-12">
-                            <label className="form-label" htmlFor="period">Срок кредита</label>
+                            <label className="form-label" htmlFor="monthsNum">Срок кредита</label>
                         </div>
                         <div className="col-8 col-sm-12 d-flex">
-                            <input required type="number" min="0" step="1" name="period" id="period" className="form-input" value={credit.period} onChange={this.onChange}/>
+                            <input required type="number" min="0" step="1" name="monthsNum" id="monthsNum" className="form-input" value={credit.monthsNum} onChange={this.onChange}/>
                             <span className="ml-2 text-nowrap">месяцев</span>
                         </div>
                     </div>
 
                     <div className="form-group">
                         <div className="col-4 col-sm-12">
-                            <label className="form-label" htmlFor="dateStart">Дата выдачи кредита</label>
+                            <label className="form-label" htmlFor="startDate">Дата выдачи кредита</label>
                         </div>
                         <div className="col-8 col-sm-12">
-                            <input required type="date" id="dateStart" name="dateStart" className="form-input" value={credit.dateStart} onChange={this.onChange}/>
+                            <input required type="date" id="startDate" name="startDate" className="form-input" value={credit.startDate} onChange={this.onChange}/>
                         </div>
                     </div>
 
@@ -98,19 +98,19 @@ class Form extends React.Component {
 
                     <div className="form-group">
                         <div className="col-4 col-sm-12">
-                            <label className="form-label" htmlFor="paymentWhen">Ежемесячные платежи</label>
+                            <label className="form-label" htmlFor="paymentDay">Ежемесячные платежи</label>
                         </div>
                         <div className="col-8 col-sm-12">
-                            <select name="paymentWhen" className="form-select" value={credit.paymentWhen} onChange={this.onChange}>
-                                <option value="issueDay">в день выдачи кредита</option>
-                                <option value="lastDayOfMonth">в последний день месяца</option>
+                            <select name="paymentDay" className="form-select" value={credit.paymentDay} onChange={this.onChange}>
+                                <option value="issue_day">в день выдачи кредита</option>
+                                <option value="last_day_of_month">в последний день месяца</option>
                                 {Array.from({length: 28}, (_, i) =>
                                     <option key={i+1} value={i+1}>{i+1}-е число каждого месяца</option>
                                 )}
                             </select>
-                            <label className="form-checkbox">
-                                <input type="checkbox" name="firstPaymentOnlyPercents" checked={credit.firstPaymentOnlyPercents} onChange={this.onChange}/><i className="form-icon"/> Первый платеж - только проценты
-                            </label>
+                            {/*<label className="form-checkbox">*/}
+                            {/*    <input type="checkbox" name="firstPaymentOnlyPercents" checked={credit.firstPaymentOnlyPercents} onChange={this.onChange}/><i className="form-icon"/> Первый платеж - только проценты*/}
+                            {/*</label>*/}
                         </div>
                     </div>
                 </div>
@@ -118,35 +118,38 @@ class Form extends React.Component {
                 <div className="form-group">
                     <label className="form-label">Досрочные погашения</label>
                     {credit.payments.map((payment, i) =>
-                        <div key={payment.key} className="payment columns">
-                            <div className="column col-3">
-                                <select name={`payment.${i}.period`} className="form-select select-sm" value={payment.period} onChange={this.changePayment}>
-                                    <option value="">Разовый</option>
-                                    <option value="1M">Раз в месяц</option>
-                                    <option value="2M">Раз в 2 месяца</option>
-                                    <option value="3M">Раз в квартал</option>
-                                    <option value="6M">Раз в полгода</option>
-                                    <option value="1Y">Раз в год</option>
-                                </select>
-                            </div>
-                            <div className="column col-5">
-                                <select name={`payment.${i}.recalc`} className="form-select select-sm" value={payment.recalc} onChange={this.changePayment}>
-                                    <option value="1">Уменьшить срок кредита</option>
-                                    <option value="2">Уменьшить ежемесячный платеж</option>
-                                </select>
-                            </div>
-                            <div className="column col-4 d-flex">
-                                <input type="date" name={`payment.${i}.date`} className="form-input input-sm" value={payment.date} onChange={this.changePayment}/>
-                                <button type="button" className="btn btn-action btn-sm ml-2" onClick={this.removePayment} data-id={i}><i className="icon icon-cross"/></button>
-                            </div>
-                            <div className="column col-3 mt-2">
-                                <input type="number" name={`payment.${i}.sum`} className="form-input input-sm" placeholder="Сумма" value={payment.sum} onChange={this.changePayment}/>
-                            </div>
-                            <div className="column col-9 mt-2">
-                                <select name={`payment.${i}.next`} className="form-select select-sm" value={payment.next} onChange={this.changePayment}>
-                                    <option value="0">Следующий платеж - без изменений</option>
-                                    <option value="1">Следующий платеж - только проценты</option>
-                                </select>
+                        <div key={payment.key} className="payment d-flex">
+                            <div className="payment-id mr-2">{i+1}.</div>
+                            <div key={payment.key} className="payment-fields columns">
+                                <div className="column col-3">
+                                    <select name={`payment.${i}.period`} className="form-select" value={payment.period} onChange={this.changePayment}>
+                                        <option value="0">Разовый</option>
+                                        <option value="1">Раз в месяц</option>
+                                        <option value="2">Раз в 2 месяца</option>
+                                        <option value="3">Раз в 3 месяца</option>
+                                        <option value="6">Раз в полгода</option>
+                                        <option value="12">Раз в год</option>
+                                    </select>
+                                </div>
+                                <div className="column col-5">
+                                    <select name={`payment.${i}.reduceType`} className="form-select" value={payment.reduceType} onChange={this.changePayment}>
+                                        <option value="reduce_period">Уменьшить срок кредита</option>
+                                        <option value="reduce_sum">Уменьшить ежемесячный платеж</option>
+                                    </select>
+                                </div>
+                                <div className="column col-4 d-flex">
+                                    <input required type="date" name={`payment.${i}.startDate`} className="form-input" value={payment.startDate} onChange={this.changePayment}/>
+                                    <button type="button" className="btn btn-action ml-2" onClick={this.removePayment} data-id={i}><i className="icon icon-cross"/></button>
+                                </div>
+                                <div className="column col-3 mt-2">
+                                    <input required type="number" min="0" step="1" name={`payment.${i}.sum`} className="form-input" placeholder="Сумма" value={payment.sum} onChange={this.changePayment}/>
+                                </div>
+                                <div className="column col-9 mt-2">
+                                    <select name={`payment.${i}.nextPaymentType`} className="form-select" value={payment.nextPaymentType} onChange={this.changePayment}>
+                                        <option value="no_changes">Следующий платеж - без изменений</option>
+                                        <option value="only_interest">Следующий платеж - только проценты</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     )}

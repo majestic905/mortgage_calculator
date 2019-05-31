@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {selectors, actions} from './store';
+import {selectors, actions} from './reducer';
 import {formatDateTime} from './misc';
 
 class MenuItem extends React.Component {
@@ -65,6 +65,7 @@ class Credits extends React.Component {
             <ul id="credits-list" className="menu">
                 <li className="menu-item">
                     <h3>Расчеты</h3>
+                    <span id="app-version" className="text-gray">{process.env.REACT_APP_VERSION}</span>
                 </li>
                 <li className="divider"/>
                 {this.props.credits.map((credit, index) =>
@@ -82,6 +83,16 @@ class Credits extends React.Component {
                         <i className="icon icon-plus"/> Создать новый расчет
                     </a>
                 </li>
+                {this.props.modified &&
+                    <React.Fragment>
+                        <li className="divider"/>
+                        <li className="menu-item c-hand">
+                            <a onClick={this.props.saveChanges}>
+                                <i className="icon icon-check"/> Сохранить изменения
+                            </a>
+                        </li>
+                    </React.Fragment>
+                }
             </ul>
         )
     }
@@ -90,13 +101,15 @@ class Credits extends React.Component {
 const mapStateToProps = (store) => ({
     credits: selectors.getCredits(store),
     selectedId: selectors.getSelectedId(store),
+    modified: selectors.getModified(store)
 });
 
 const mapDispatchToProps = {
     addCredit: actions.addCredit,
     removeCredit: actions.removeCredit,
     selectCredit: actions.selectCredit,
-    renameCredit: actions.renameCredit
+    renameCredit: actions.renameCredit,
+    saveChanges: actions.saveChanges
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Credits);

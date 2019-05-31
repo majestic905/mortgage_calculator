@@ -23,3 +23,9 @@ yarn-debug.log*
 yarn-error.log*
 
 .idea/
+key.pem
+*.crx
+*.zip
+*.xpi
+extension/.web-extension-id
+extension/web-ext-artifacts
