@@ -1,4 +1,4 @@
-/* global chrome */
+/* global chrome, process */
 
 export const actionTypes = {
     ADD_CREDIT: "ADD_CREDIT",
@@ -138,6 +138,38 @@ function getEmptyCredit() {
                 startDate: "2019-05-21",
                 sum: "42700",
                 nextPaymentType: "only_interest"
+            },
+            {
+                key: Math.random().toString(36).slice(2),
+                period: "0",
+                reduceType: "reduce_period",
+                startDate: "2019-06-20",
+                sum: "44200",
+                nextPaymentType: "only_interest"
+            },
+            {
+                key: Math.random().toString(36).slice(2),
+                period: "0",
+                reduceType: "reduce_period",
+                startDate: "2019-07-26",
+                sum: "308450",
+                nextPaymentType: "only_interest"
+            },
+            {
+                key: Math.random().toString(36).slice(2),
+                period: "0",
+                reduceType: "reduce_period",
+                startDate: "2019-08-20",
+                sum: "55125",
+                nextPaymentType: "only_interest"
+            },
+            {
+                key: Math.random().toString(36).slice(2),
+                period: "0",
+                reduceType: "reduce_sum",
+                startDate: "2019-09-10",
+                sum: "120000",
+                nextPaymentType: "only_interest"
             }
         ],
         meta: {
@@ -230,7 +262,6 @@ class Calculator {
         let pmt = this.calcAnnuityPMT(sum, monthsNum, percent),
             date = new Date(start),
             loan, interest = 0,
-            lastRegularId = 1,
             nextOnlyInterest = false;
         payments = payments.map(obj => ({...obj}));
 
@@ -255,11 +286,14 @@ class Calculator {
             interest = 0;
 
             if (payment.type === "regular") {
-                lastRegularId = payment.index;
                 nextOnlyInterest = false;
             } else {
-                if (payment.reduceType === "reduce_sum")
-                    pmt = this.calcAnnuityPMT(sum, monthsNum - lastRegularId, percent);
+                if (payment.reduceType === "reduce_sum") {
+                    // const newMonthsNum = monthsNum - lastRegularId;
+                    const t = percent / 12;
+                    const newMonthsNum = Math.log(pmt/(pmt - (sum + loan) * t))/Math.log(1 + t) - 1;
+                    pmt = this.calcAnnuityPMT(sum, newMonthsNum, percent);
+                }
                 if (payment.nextPaymentType === "only_interest")
                     nextOnlyInterest = true;
             }
