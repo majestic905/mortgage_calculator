@@ -14,7 +14,7 @@ class Form extends React.Component {
         const payments = this.props.credit.payments.slice();
         payments.push({
             key: Math.random().toString(36).slice(2),
-            period: "", recalc: "1", date: "", next: "0", sum: ""
+            period: "", date: "", next: "0", sum: "", divide: false
         });
         this.onChange({target: {name: 'payments', value: payments}});
     };

@@ -123,55 +123,13 @@ export default function rootReducer(state = initialState, action) {
 
 function getEmptyCredit() {
     return {
-        sum: "2224000",
-        monthsNum: "84",
-        startDate: "2019-04-29",
-        percent: "10.8",
+        sum: "1000000",
+        monthsNum: "60",
+        startDate: "2019-01-10",
+        percent: "12.5",
         paymentType: "annuity",
         paymentDay: "issue_day",
-        // firstPaymentOnlyPercents: false,
-        payments: [
-            {
-                key: Math.random().toString(36).slice(2),
-                period: "0",
-                reduceType: "reduce_period",
-                startDate: "2019-05-21",
-                sum: "42700",
-                nextPaymentType: "only_interest"
-            },
-            {
-                key: Math.random().toString(36).slice(2),
-                period: "0",
-                reduceType: "reduce_period",
-                startDate: "2019-06-20",
-                sum: "44200",
-                nextPaymentType: "only_interest"
-            },
-            {
-                key: Math.random().toString(36).slice(2),
-                period: "0",
-                reduceType: "reduce_period",
-                startDate: "2019-07-26",
-                sum: "308450",
-                nextPaymentType: "only_interest"
-            },
-            {
-                key: Math.random().toString(36).slice(2),
-                period: "0",
-                reduceType: "reduce_period",
-                startDate: "2019-08-20",
-                sum: "55125",
-                nextPaymentType: "only_interest"
-            },
-            {
-                key: Math.random().toString(36).slice(2),
-                period: "0",
-                reduceType: "reduce_sum",
-                startDate: "2019-09-10",
-                sum: "120000",
-                nextPaymentType: "only_interest"
-            }
-        ],
+        payments: [],
         meta: {
             key: Math.random().toString(36).slice(2),
             name: "Новый расчет",
@@ -255,7 +213,8 @@ class Calculator {
 
     calcAnnuityPMT(sum, monthsNum, percent) {
         const t = percent / 12;
-        return parseFloat((sum * (t + t/(Math.pow((1 + t), monthsNum) - 1))).toFixed(2));
+        const pmt = sum * (t + t/(Math.pow((1 + t), monthsNum) - 1));
+        return parseFloat(pmt.toFixed(2));
     }
 
     calcAnnuity(sum, monthsNum, percent, start, payments) {
@@ -273,30 +232,31 @@ class Calculator {
                 date.setDate(date.getDate() + 1);
                 interest += sum * percent / this.daysInYear(date.getFullYear());
             }
+            interest = parseFloat(interest.toFixed(2));
 
-            if (payment.type === "extra" && payment.sum < interest) {
-                payment.error = 'Внесенной суммы досрочного погашения недостаточно для уплаты процентов. Платеж не засчитан.';
-                continue;
+            if (payment.type === "regular") {
+                loan = nextOnlyInterest ? 0 : Math.min(pmt - interest, sum);
+                nextOnlyInterest = false;
+            } else {
+                if (payment.sum < interest) {
+                    payment.error = 'Внесенной суммы досрочного погашения недостаточно для уплаты процентов. Платеж не засчитан.';
+                    continue;
+                }
+                loan = Math.min(payment.sum - interest, sum);
+                nextOnlyInterest = payment.nextPaymentType === "only_interest";
+
+                if (payment.reduceType === "reduce_sum") {
+                    const oldPMT = pmt;
+                    const t = percent / 12;
+                    const newMonthsNum = Math.ceil(Math.log(pmt/(pmt - (sum) * t))/Math.log(1 + t)) - 1;
+                    pmt = this.calcAnnuityPMT(sum - loan, newMonthsNum, percent);
+                    payment.reduce = parseFloat((oldPMT - pmt).toFixed(2));
+                }
             }
 
-            interest = parseFloat(interest.toFixed(2));
-            loan = nextOnlyInterest ? 0 : Math.min((payment.sum || pmt) - interest, sum);
             sum -= loan;
             Object.assign(payment, {interest, loan, total: interest + loan, balance: sum});
             interest = 0;
-
-            if (payment.type === "regular") {
-                nextOnlyInterest = false;
-            } else {
-                if (payment.reduceType === "reduce_sum") {
-                    // const newMonthsNum = monthsNum - lastRegularId;
-                    const t = percent / 12;
-                    const newMonthsNum = Math.log(pmt/(pmt - (sum + loan) * t))/Math.log(1 + t) - 1;
-                    pmt = this.calcAnnuityPMT(sum, newMonthsNum, percent);
-                }
-                if (payment.nextPaymentType === "only_interest")
-                    nextOnlyInterest = true;
-            }
         }
 
         if (sum > 0) {
@@ -314,7 +274,7 @@ class Calculator {
     calcDifferentiated(sum, monthsNum, percent, start, payments) {
         let pmt = parseFloat((sum / monthsNum).toFixed(2)),
             date = new Date(start),
-            interest = 0,
+            loan, interest = 0,
             lastRegularId = 1,
             nextOnlyInterest = false;
         payments = payments.map(obj => ({...obj}));
@@ -327,33 +287,28 @@ class Calculator {
                 date.setDate(date.getDate() + 1);
                 interest += sum * percent / this.daysInYear(date.getFullYear());
             }
-
             interest = parseFloat(interest.toFixed(2));
-            let loan = null;
+
             if (payment.type === "regular") {
                 loan = nextOnlyInterest ? 0 : Math.min(pmt, sum);
+                lastRegularId = payment.index;
+                nextOnlyInterest = false;
             } else {
                 if (payment.sum < interest) {
                     payment.error = 'Внесенной суммы досрочного погашения недостаточно для уплаты процентов. Платеж не засчитан.';
                     continue;
-                } else {
-                    loan = Math.min(payment.sum - interest, sum);
                 }
+                loan = Math.min(payment.sum - interest, sum);
+
+                if (payment.reduceType === "reduce_sum")
+                    pmt = parseFloat((sum / (monthsNum - lastRegularId)).toFixed(2));
+
+                nextOnlyInterest = (payment.nextPaymentType === "only_interest");
             }
 
             sum -= loan;
             Object.assign(payment, {interest, loan, total: interest + loan, balance: sum});
             interest = 0;
-
-            if (payment.type === "regular") {
-                lastRegularId = payment.index;
-                nextOnlyInterest = false;
-            } else {
-                if (payment.reduceType === "reduce_sum")
-                    pmt = parseFloat((sum / (monthsNum - lastRegularId)).toFixed(2));
-                if (payment.nextPaymentType === "only_interest")
-                    nextOnlyInterest = true;
-            }
         }
 
         if (sum > 0) {

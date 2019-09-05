@@ -27,5 +27,6 @@ key.pem
 *.crx
 *.zip
 *.xpi
+data.txt
 extension/.web-extension-id
 extension/web-ext-artifacts

@@ -48,8 +48,13 @@ class Table extends React.Component {
                             <td>{formatDate(item.date)}</td>
                             <td>{item.loan.toFixed(2)}</td>
                             <td>{item.interest.toFixed(2)}</td>
-                            <td>{item.total.toFixed(2)}</td>
-                            <td>{item.balance.toFixed(2)}</td>
+                            <td className={!!item.reduce ? 'tooltip' : null} data-tooltip={item.reduce ? `↓ ${item.reduce}` : null}>
+                                {item.total.toFixed(2)}
+                            </td>
+                            <td>
+                                {item.balance.toFixed(2)}
+                                {item.type === "regular" ? ` (${Math.round((totalLoan - item.balance)/totalLoan * 100)}%)` : null}
+                            </td>
                         </tr>
                     )}
                     <tr>
