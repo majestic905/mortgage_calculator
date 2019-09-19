@@ -221,7 +221,8 @@ class Calculator {
         let pmt = this.calcAnnuityPMT(sum, monthsNum, percent),
             date = new Date(start),
             loan, interest = 0,
-            nextOnlyInterest = false;
+            nextOnlyInterest = false,
+            alreadyReducedInThisMonth = false;
         payments = payments.map(obj => ({...obj}));
 
         for (const payment of payments) {
@@ -237,6 +238,7 @@ class Calculator {
             if (payment.type === "regular") {
                 loan = nextOnlyInterest ? 0 : Math.min(pmt - interest, sum);
                 nextOnlyInterest = false;
+                alreadyReducedInThisMonth = false;
             } else {
                 if (payment.sum < interest) {
                     payment.error = 'Внесенной суммы досрочного погашения недостаточно для уплаты процентов. Платеж не засчитан.';
@@ -246,10 +248,12 @@ class Calculator {
                 nextOnlyInterest = payment.nextPaymentType === "only_interest";
 
                 if (payment.reduceType === "reduce_sum") {
-                    const oldPMT = pmt;
-                    const t = percent / 12;
-                    const newMonthsNum = Math.ceil(Math.log(pmt/(pmt - (sum) * t))/Math.log(1 + t)) - 1;
+                    let oldPMT = pmt;
+                    let t = percent / 12;
+                    let newMonthsNum = Math.log(pmt/(pmt - sum * t))/Math.log(1 + t) - (1 - alreadyReducedInThisMonth);
+                    newMonthsNum = Math.abs(Math.round(newMonthsNum) - newMonthsNum) < 0.01 ? Math.round(newMonthsNum) : Math.ceil(newMonthsNum);
                     pmt = this.calcAnnuityPMT(sum - loan, newMonthsNum, percent);
+                    alreadyReducedInThisMonth = true;
                     payment.reduce = parseFloat((oldPMT - pmt).toFixed(2));
                 }
             }
@@ -267,7 +271,7 @@ class Calculator {
         }
 
         return payments
-            .filter(payment => !!payment.total)
+            .filter(payment => !!payment.total || !!payment.error)
             .map(payment => ({...payment, date: payment.date.toISOString()}))
     }
 
@@ -319,7 +323,7 @@ class Calculator {
         }
 
         return payments
-            .filter(payment => !!payment.total)
+            .filter(payment => !!payment.total || !!payment.error)
             .map(payment => ({...payment, date: payment.date.toISOString()}))
     }
 }
