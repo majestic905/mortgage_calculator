@@ -34,7 +34,10 @@ class App extends React.Component {
 
     componentDidMount() {
         if (process.env.NODE_ENV === "production")
-            chrome.storage.local.get('credit', data => this.setState({credit: data.credit}));
+            chrome.storage.local.get('credit', data => {
+                if (data.credit)
+                    this.setState({credit: data.credit});
+            });
     }
 
     markSaved = () => this.setState({modified: false});
