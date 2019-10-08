@@ -1,25 +1,31 @@
 import React from 'react';
-import {connect} from 'react-redux';
-import {selectors} from "./reducer";
-import {formatDate} from './misc';
 
-class Table extends React.Component {
+
+function formatDate(d) {
+    d = new Date(d);
+    return (
+        ("0" + d.getDate()).slice(-2) + "." + ("0"+(d.getMonth()+1)).slice(-2) + "." + d.getFullYear()
+    );
+}
+
+
+export default class Table extends React.Component {
     render() {
-        const calculation = this.props.calculation;
+        const {error, data} = this.props.calculation;
 
-        if (calculation.error)
+        if (error)
             return (
                 <div id="error" className="toast toast-error">
-                    {calculation.error.toString()}
+                    {error.toString()}
                 </div>
             );
 
-        if (calculation.data.length === 0)
+        if (data.length === 0)
             return null;
 
-        const totalLoan = calculation.data.reduce((acc, val) => acc + val.loan || 0, 0).toFixed(2);
-        const totalInterest = calculation.data.reduce((acc, val) => acc + val.interest || 0, 0).toFixed(2);
-        const total = calculation.data.reduce((acc, val) => acc + val.total || 0, 0).toFixed(2);
+        const totalLoan = data.reduce((acc, val) => acc + val.loan || 0, 0).toFixed(2);
+        const totalInterest = data.reduce((acc, val) => acc + val.interest || 0, 0).toFixed(2);
+        const total = data.reduce((acc, val) => acc + val.total || 0, 0).toFixed(2);
 
         let counter = 0;
 
@@ -37,7 +43,7 @@ class Table extends React.Component {
                     </tr>
                     </thead>
                     <tbody>
-                    {calculation.data.map((item, i) => item.error
+                    {data.map((item, i) => item.error
                         ? <tr key={i} className='text-error'>
                             <td>{item.type === 'regular' ? ++counter : null}</td>
                             <td>{formatDate(item.date)}</td>
@@ -83,9 +89,3 @@ class Table extends React.Component {
         )
     }
 }
-
-const mapStateToProps = (store) => ({
-    calculation: selectors.getCalculation(store)
-});
-
-export default connect(mapStateToProps, null)(Table);

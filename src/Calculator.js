@@ -1,144 +1,4 @@
-/* global chrome, process */
-
-export const actionTypes = {
-    ADD_CREDIT: "ADD_CREDIT",
-    CHANGE_CREDIT: "CHANGE_CREDIT",
-    REMOVE_CREDIT: "REMOVE_CREDIT",
-    SELECT_CREDIT: "SELECT_CREDIT",
-    RENAME_CREDIT: "RENAME_CREDIT",
-    CALCULATE: "CALCULATE",
-    MARK_SAVED: "MARK_SAVED",
-};
-
-export const actions = {
-    addCredit: () => ({
-        type: actionTypes.ADD_CREDIT,
-    }),
-    removeCredit: (id) => ({
-        type: actionTypes.REMOVE_CREDIT,
-        payload: {id},
-    }),
-    selectCredit: (id) => ({
-        type: actionTypes.SELECT_CREDIT,
-        payload: {id}
-    }),
-    changeCredit: (field, value) => ({
-        type: actionTypes.CHANGE_CREDIT,
-        payload: {field, value}
-    }),
-    renameCredit: (id, name) => ({
-        type: actionTypes.RENAME_CREDIT,
-        payload: {id, name}
-    }),
-    calculate: () => ({
-        type: actionTypes.CALCULATE
-    }),
-    markSaved: () => ({
-        type: actionTypes.MARK_SAVED
-    }),
-    saveChanges: () => (dispatch, getState) => {
-        if (process.env.NODE_ENV === "development")
-            dispatch(actions.markSaved());
-        else
-            chrome.storage.local.set(
-                {state: getState()},
-                () => dispatch(actions.markSaved())
-            );
-    }
-};
-
-export const selectors = {
-    getCredits: store => store.credits,
-    getSelectedId: store => store.selectedId,
-    getSelectedCredit: store => store.credits[store.selectedId],
-    getCalculation: store => store.calculation,
-    getModified: store => store.modified
-};
-
-const initialState = {
-    credits: [getEmptyCredit(), getEmptyCredit(), getEmptyCredit()],
-    selectedId: 0,
-    calculation: {error: null, data: []},
-    modified: false,
-};
-
-export default function rootReducer(state = initialState, action) {
-    if (Object.values(actionTypes).includes(action.type) && action.type !== actionTypes.MARK_SAVED)
-        state = {...state, modified: true};
-
-    switch (action.type) {
-        case actionTypes.ADD_CREDIT: {
-            const credits = [...state.credits, getEmptyCredit()];
-            return {...state, credits};
-        }
-        case actionTypes.REMOVE_CREDIT: {
-            const {id} = action.payload;
-            const credits = [...state.credits];
-
-            if (credits.length > 1) {
-                credits.splice(id, 1);
-
-                let selectedId = state.selectedId;
-                if (selectedId >= id)
-                    selectedId = Math.max(0, selectedId - 1);
-
-                return {...state, credits, selectedId};
-            }
-
-            return state;
-        }
-        case actionTypes.SELECT_CREDIT: {
-            const {id} = action.payload;
-
-            const credit = state.credits[id];
-            const calculation = calculate(credit);
-
-            return {...state, selectedId: id, calculation};
-        }
-        case actionTypes.CHANGE_CREDIT: {
-            const {field, value} = action.payload;
-            const selectedId = state.selectedId;
-            const credits = state.credits.slice();
-            credits[selectedId] = {...credits[selectedId], [field]: value};
-            return {...state, credits}
-        }
-        case actionTypes.RENAME_CREDIT: {
-            const {id, name} = action.payload;
-            const credits = [...state.credits];
-            credits[id] = {...credits[id], meta: {...credits[id].meta, name}};
-            return {...state, credits};
-        }
-        case actionTypes.CALCULATE: {
-            const credit = state.credits[state.selectedId];
-            const calculation = calculate(credit);
-            return {...state, calculation};
-        }
-        case actionTypes.MARK_SAVED: {
-            return {...state, modified: false}
-        }
-        default:
-            return state;
-    }
-}
-
-function getEmptyCredit() {
-    return {
-        sum: "1000000",
-        monthsNum: "60",
-        startDate: "2019-01-10",
-        percent: "12.5",
-        paymentType: "annuity",
-        paymentDay: "issue_day",
-        payments: [],
-        meta: {
-            key: Math.random().toString(36).slice(2),
-            name: "Новый расчет",
-            date: new Date().toISOString()
-        }
-    };
-}
-
-class Calculator {
+export default class Calculator {
     DAYS_IN_MONTH = [31, undefined, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
     isLeapYear(year) {
@@ -207,8 +67,8 @@ class Calculator {
         const percent = parseFloat(credit.percent)/100;
 
         return credit.paymentType === "annuity"
-               ? this.calcAnnuity(sum, monthsNum, percent, startDate, payments)
-               : this.calcDifferentiated(sum, monthsNum, percent, startDate, payments);
+            ? this.calcAnnuity(sum, monthsNum, percent, startDate, payments)
+            : this.calcDifferentiated(sum, monthsNum, percent, startDate, payments);
     }
 
     calcAnnuityPMT(sum, monthsNum, percent) {
@@ -325,14 +185,5 @@ class Calculator {
         return payments
             .filter(payment => !!payment.total || !!payment.error)
             .map(payment => ({...payment, date: payment.date.toISOString()}))
-    }
-}
-
-function calculate(credit) {
-    try {
-        const data = new Calculator().calculate(credit);
-        return {error: null, data};
-    } catch (error) {
-        return {error, data: []};
     }
 }
