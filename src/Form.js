@@ -4,7 +4,7 @@ import React from 'react';
 function generateEmptyPayment() {
     return {
         key: Math.random().toString(36).slice(2),
-        period: "", date: "", next: "0", sum: "", divide: false
+        period: "0", startDate: "", nextPaymentType: "only_interest", reduceType: "reduce_sum", sum: "0"
     }
 }
 
@@ -119,7 +119,7 @@ export default class Form extends React.Component {
 
                 <div className="divider"/>
 
-                <div className="form-group">
+                <div id="payments-wrapper" className="form-group">
                     <label className="form-label">Досрочные погашения</label>
                     {credit.payments.map((payment, i) =>
                         <div key={payment.key} className="payment d-flex">
@@ -157,7 +157,9 @@ export default class Form extends React.Component {
                             </div>
                         </div>
                     )}
-                    <button type="button" id="add-button" className="btn btn-link btn-sm" onClick={this.addPayment}><i className="icon icon-plus"/> Добавить досрочный платеж</button>
+                    <div className="payment d-flex">
+                        <button type="button" id="add-button" className="btn btn-link btn-sm" onClick={this.addPayment}><i className="icon icon-plus"/> Добавить досрочный платеж</button>
+                    </div>
                 </div>
 
                 <div className="divider"/>

@@ -3,7 +3,7 @@
 import React from 'react';
 import Form from './Form';
 import Table from './Table';
-import Calculator from "./Calculator";
+import calculate from "./calculate";
 import './App.scss';
 
 
@@ -53,7 +53,7 @@ class App extends React.Component {
         const calculation = {error: null, data: []};
 
         try {
-            calculation.data = new Calculator().calculate(this.state.credit);
+            calculation.data = calculate(this.state.credit);
         } catch (error) {
             calculation.error = error;
         }

@@ -1,6 +1,6 @@
 {
   "name": "Mortgage calculator",
-  "version": "1.4.0",
+  "version": "1.4.2",
   "author": "majestic905@gmail.com",
   "manifest_version": 2,
   "permissions": ["storage"],
