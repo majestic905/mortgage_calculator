@@ -169,7 +169,6 @@ export default class Form extends React.Component {
                         <div className="col-4 col-sm-12"/>
                         <div className="col-8 col-sm-12">
                             <button type="button" className="btn btn-primary" onClick={this.props.calculate}>Рассчитать</button>
-                            {this.props.saveCredit && <button type="button" className="btn btn-error float-right" onClick={this.props.saveCredit}>Сохранить изменения</button>}
                         </div>
                     </div>
                 </div>

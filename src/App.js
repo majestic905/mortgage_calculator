@@ -1,8 +1,6 @@
-/* global chrome, process */
-
 import React from 'react';
-import Form from './Form';
-import Table from './Table';
+import Desktop from './desktop';
+import Mobile from './mobile';
 import calculate from "./calculate";
 import './App.scss';
 
@@ -15,12 +13,7 @@ function generateEmptyCredit() {
         percent: "12.5",
         paymentType: "annuity",
         paymentDay: "issue_day",
-        payments: [],
-        meta: {
-            key: Math.random().toString(36).slice(2),
-            name: "Новый расчет",
-            date: new Date().toISOString()
-        }
+        payments: []
     };
 }
 
@@ -29,27 +22,21 @@ class App extends React.Component {
     state = {
         credit: generateEmptyCredit(),
         calculation: {error: null, data: []},
-        modified: false,
     };
 
     componentDidMount() {
-        if (process.env.NODE_ENV === "production")
-            chrome.storage.local.get('credit', data => {
-                if (data.credit)
-                    this.setState({credit: data.credit});
-            });
+        try {
+            const json = localStorage.getItem('credit');
+            if (json) {
+                this.setState({credit: JSON.parse(json)});
+                setTimeout(this._calculate, 100);
+            }
+        } catch (error) {
+            console.error(error);
+        }
     }
 
-    markSaved = () => this.setState({modified: false});
-
-    saveCredit = () => {
-        if (process.env.NODE_ENV === "production")
-            chrome.storage.local.set({credit: this.state.credit}, this.markSaved);
-        else
-            this.markSaved();
-    };
-
-    calculate = () => {
+    _calculate = () => {
         const calculation = {error: null, data: []};
 
         try {
@@ -61,24 +48,29 @@ class App extends React.Component {
         this.setState({calculation});
     };
 
+    saveCredit = () => {
+        try {
+            localStorage.setItem('credit', JSON.stringify(this.state.credit));
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    calculate = () => {
+        this._calculate();
+        if (!this.state.calculation.error)
+            this.saveCredit();
+    };
+
     onChange = (ev) => {
         const credit = {...this.state.credit, [ev.target.name]: ev.target.value};
-        this.setState({credit, modified: true});
+        this.setState({credit});
     };
 
     render() {
-        const saveCredit = this.state.modified ? this.saveCredit : undefined;
-
-        return (
-            <div className="columns">
-                <div className="column col-xl-12 col-6">
-                    <Form credit={this.state.credit} onChange={this.onChange} calculate={this.calculate} saveCredit={saveCredit}/>
-                </div>
-                <div className="column col-xl-12 col-6">
-                    <Table calculation={this.state.calculation}/>
-                </div>
-            </div>
-        );
+        console.log(this.state.credit, this.state.calculation);
+        const Component = document.location.pathname === "/mobile" ? Mobile : Desktop;
+        return <Component {...this.state} onChange={this.onChange} calculate={this.calculate}/>;
     }
 }
 

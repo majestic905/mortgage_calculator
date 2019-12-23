@@ -22,11 +22,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-.idea/
-key.pem
-*.crx
-*.zip
-*.xpi
+/.idea
+/.vscode
+.firebaserc
+/.firebase
 data.txt
-extension/.web-extension-id
-extension/web-ext-artifacts

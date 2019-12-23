@@ -121,8 +121,9 @@ function calcAnnuity({startDate, monthsNum, balance, percent, payments, paymentD
 
             // regular payment cannot satisfy the next condition since payment.sum is precalculated
             if (loan < 0) { // i.e. payment.sum < interest
-                payment.error = 'Внесенной суммы досрочного погашения недостаточно для уплаты процентов. Платеж не засчитан.';
+                payment.error = 'Внесенной суммы недостаточно для уплаты процентов. Платеж не засчитан.';
                 data.push(payment);
+                nextOnlyInterest = false;
                 continue;
             }
 

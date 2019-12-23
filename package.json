@@ -1,23 +1,21 @@
 {
   "name": "mortgage_calculator",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "author": "majestic905@gmail.com",
   "private": true,
   "dependencies": {
     "node-sass": "^4.12.0",
+    "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-scripts": "3.0.1",
+    "react-scripts": "^3.3.0",
     "spectre.css": "^0.5.8"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && npm run move && npm run zip",
+    "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "move": "rm -rf extension/static && rm extension/index.html && cp build/index.html extension/index.html && cp -r build/static extension/static",
-    "crx": "node scripts/compress",
-    "zip": "cd extension && zip -r -FS ../mortgage_calculator.zip *"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -33,9 +31,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "crx": "^5.0.0",
-    "web-ext": "^3.1.1"
   }
 }
