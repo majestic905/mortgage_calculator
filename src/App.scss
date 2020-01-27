@@ -26,7 +26,6 @@ $size-xl: 1520px;
 @import "~spectre.css/src/layout";
 
 // Components
-@import "~spectre.css/src/tabs";
 @import "~spectre.css/src/toasts";
 @import "~spectre.css/src/tooltips";
 
@@ -46,16 +45,18 @@ $size-xl: 1520px;
 
 .d-flex {
   justify-content: space-between;
+  align-items: center;
 }
 
-#table th, #table td {
-  &:not(:nth-child(1)):not(:nth-child(2)) {
-    text-align: right;
+#table {
+  th, td {
+    &:not(:nth-child(1)):not(:nth-child(2)) {
+      text-align: right;
+    }
   }
-}
-
-#table tfoot td {
-  border: none;
+  tfoot td {
+    border: none;
+  }
 }
 
 #stats td {
@@ -64,34 +65,22 @@ $size-xl: 1520px;
   }
 }
 
-#mobile {
-  // see .btn-lg definition
-  padding-bottom: $control-size-lg;
-
-  #navigation {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    z-index: 2;
+#form {
+  .accordion input:checked ~ .accordion-body, .accordion[open] .accordion-body {
+    max-height: 1000rem;
   }
 
-  #form {
-    padding: $unit-4 $unit-4;
-
-    .accordion input:checked ~ .accordion-body, .accordion[open] .accordion-body {
-      max-height: 1000rem;
-    }
-
-    .payment {
-      margin-bottom: $unit-6;
+  .payment .columns {
+    flex: 1;
+    margin: 0 (-$unit-1);
+    .column {
+      padding: 0 $unit-1;
+      margin-bottom: $unit-2;
     }
   }
+}
 
-  #calculation {
-    padding: $unit-2 $unit-2;
-  }
-
+@media (max-width: $size-md) {
   #table {
     font-size: 0.7rem;
 
@@ -105,12 +94,38 @@ $size-xl: 1520px;
       user-select: none;
     }
   }
+
+  #form {
+    padding: $unit-4 $unit-4;
+
+    .payment {
+      margin-bottom: $unit-6;
+      flex-wrap: wrap;
+
+      > div:first-child {
+        order: 1;
+        // .h5
+        font-weight: 500;
+        font-size: 1rem;
+      }
+      > div:last-child {order: 2;}
+      .columns {
+        order: 3;
+        flex-basis: 100%;
+        margin-top: $unit-2;
+      }
+    }
+  }
 }
 
-#desktop {
-  padding: 1rem;
-  max-width: 1920px;
-  margin: 0 auto;
+@media (min-width: $size-md) {
+  #table {
+    th, td { padding: $unit-1 $unit-2; }
+  }
+
+  #stats {
+    display: none;
+  }
 
   #form {
     @include shadow-variant(.05rem);
@@ -120,39 +135,47 @@ $size-xl: 1520px;
     .tooltip::after { white-space: pre-line; width: 440px; }
 
     .payment {
-      display: flex;
       margin-bottom: $unit-3;
+      align-items: flex-start;
 
-      div:first-child span {
+      > div:first-child {
         position: relative;
         top: .4em;
-      }
-
-      .columns {
-        flex: 1;
-        margin: 0 (-$unit-1);
-        .column {
-          padding: 0 $unit-1;
-        }
+        text-align: right;
       }
     }
 
     input[type="date"]::-webkit-clear-button { display: none; }
     input[type="date"]::-webkit-inner-spin-button { display: none; }
   }
+}
+
+
+#mobile {
+  // see .btn-lg definition
+  padding-bottom: $control-size-lg;
+
+  #navigation {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 2;
+  }
+
+  #calculation {
+    padding: $unit-2 $unit-2;
+  }
+}
+
+#desktop {
+  padding: 1rem;
+  max-width: 1920px;
+  margin: 0 auto;
 
   #calculation {
     @include shadow-variant(.05rem);
     padding: $unit-2 $unit-4;
-
-    #stats {
-      display: none;
-    }
-
-    #table {
-      width: 100%;
-      th, td { padding: $unit-1 $unit-2; }
-    }
   }
 
   #error {
@@ -160,59 +183,59 @@ $size-xl: 1520px;
   }
 }
 
-@media (min-width: $size-xl) {
-  #desktop {
-    #form, #calculation {
-      height: calc(100vh - 2rem);
-      overflow-y: scroll;
-    }
-    #form .form-horizontal:last-child, #calculation #table {
-      // TODO: wtf is this affecting #calculation table
-      margin-bottom: $unit-2;
-    }
-  }
-}
-
-@media (max-width: $size-xl) {
-  #desktop {
-    #calculation {
-      margin-top: $unit-4;
-    }
-
-    #form > div:first-child {
-      & > div:first-child {
-        padding-right: $unit-4;
-        border-right: 1px solid $border-color-light;
-      }
-      & > div:nth-child(2) {
-        padding-left: $unit-4;
-      }
-    }
-
-    #error {
-      margin-top: $unit-4;
-    }
-  }
-}
-
-@media (max-width: $size-lg) {
-  #desktop {
-    #form > div:first-child {
-      & > div:first-child {
-        padding-right: $unit-2;
-        border-right: none;
-      }
-      & > div:nth-child(2) {
-        padding-left: $unit-2;
-      }
-    }
-  }
-}
-
-@media (max-width: $size-md) {
-  #desktop #calculation #table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
-}
+//@media (min-width: $size-xl) {
+//  #desktop {
+//    #form, #calculation {
+//      height: calc(100vh - 2rem);
+//      overflow-y: scroll;
+//    }
+//    #form .form-horizontal:last-child, #calculation #table {
+//      // TODO: wtf is this affecting #calculation table
+//      margin-bottom: $unit-2;
+//    }
+//  }
+//}
+//
+//@media (max-width: $size-xl) {
+//  #desktop {
+//    #calculation {
+//      margin-top: $unit-4;
+//    }
+//
+//    #form > div:first-child {
+//      & > div:first-child {
+//        padding-right: $unit-4;
+//        border-right: 1px solid $border-color-light;
+//      }
+//      & > div:nth-child(2) {
+//        padding-left: $unit-4;
+//      }
+//    }
+//
+//    #error {
+//      margin-top: $unit-4;
+//    }
+//  }
+//}
+//
+//@media (max-width: $size-lg) {
+//  #desktop {
+//    #form > div:first-child {
+//      & > div:first-child {
+//        padding-right: $unit-2;
+//        border-right: none;
+//      }
+//      & > div:nth-child(2) {
+//        padding-left: $unit-2;
+//      }
+//    }
+//  }
+//}
+//
+//@media (max-width: $size-md) {
+//  #desktop #calculation #table {
+//    display: block;
+//    overflow-x: auto;
+//    white-space: nowrap;
+//  }
+//}

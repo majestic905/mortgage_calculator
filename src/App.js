@@ -6,6 +6,8 @@ import Calculation from './Calculation';
 import calculate from "./calculate";
 import './App.scss';
 
+// TODO: every month 10k extra payment with default values leads to negative reduce in regular payment
+
 function generateEmptyCredit() {
     return {
         sum: "1000000",
@@ -36,12 +38,12 @@ const reducer = (state, action) => {
         default:
             return state;
     }
-}
+};
 
 const reducerInit = (persistedCredit) => ({
     credit: persistedCredit,
     calculation: {data: calculate(persistedCredit), error: null}
-})
+});
 
 const App = () => {
     const [persistedCredit, persistCredit] = usePersistedJson("credit", generateEmptyCredit);
