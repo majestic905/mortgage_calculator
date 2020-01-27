@@ -1,9 +1,10 @@
-import React from 'react';
-import Desktop from './desktop';
-import Mobile from './mobile';
+import React, {useState, useEffect, useCallback, useReducer} from 'react';
+import usePersistedJson from "./hooks/usePersistedJson";
+import MobileNavigation from "./MobileNavigation";
+import Form from "./Form";
+import Calculation from './Calculation';
 import calculate from "./calculate";
 import './App.scss';
-
 
 function generateEmptyCredit() {
     return {
@@ -16,62 +17,72 @@ function generateEmptyCredit() {
         payments: []
     };
 }
-
-
-class App extends React.Component {
-    state = {
-        credit: generateEmptyCredit(),
-        calculation: {error: null, data: []},
-    };
-
-    componentDidMount() {
-        try {
-            const json = localStorage.getItem('credit');
-            if (json) {
-                this.setState({credit: JSON.parse(json)});
-                setTimeout(this._calculate, 100);
+  
+const reducer = (state, action) => {
+    switch (action.type) {
+        case 'CHANGE_CREDIT': {
+            const credit = {...state.credit, [action.payload.name]: action.payload.value};
+            return {...state, credit};
+        }
+        case 'CALCULATE': {
+            const calculation = {};
+            try {
+                calculation.data = calculate(state.credit);
+            } catch (error) {
+                calculation.error = error;
             }
-        } catch (error) {
-            console.error(error);
+            return {...state, calculation};
         }
+        default:
+            return state;
     }
+}
 
-    _calculate = () => {
-        const calculation = {error: null, data: []};
+const reducerInit = (persistedCredit) => ({
+    credit: persistedCredit,
+    calculation: {data: calculate(persistedCredit), error: null}
+})
 
-        try {
-            calculation.data = calculate(this.state.credit);
-        } catch (error) {
-            calculation.error = error;
-        }
+const App = () => {
+    const [persistedCredit, persistCredit] = usePersistedJson("credit", generateEmptyCredit);
+    const [{credit, calculation}, dispatch] = useReducer(reducer, persistedCredit, reducerInit);
 
-        this.setState({calculation});
-    };
+    // we want to persist credit parameters after every successful calculation
+    useEffect(() => {
+        if (!calculation.error)
+            persistCredit(credit)
+    }, [calculation]);
 
-    saveCredit = () => {
-        try {
-            localStorage.setItem('credit', JSON.stringify(this.state.credit));
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    const [currentPage, setCurrentPage] = useState("form");
+    const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const isMobilePathname = window.location.pathname === "/mobile";
+    const renderMobileLayout = isMobilePathname || isMobileDevice;
 
-    calculate = () => {
-        this._calculate();
-        if (!this.state.calculation.error)
-            this.saveCredit();
-    };
-
-    onChange = (ev) => {
-        const credit = {...this.state.credit, [ev.target.name]: ev.target.value};
-        this.setState({credit});
-    };
-
-    render() {
-        console.log(this.state.credit, this.state.calculation);
-        const Component = document.location.pathname === "/mobile" ? Mobile : Desktop;
-        return <Component {...this.state} onChange={this.onChange} calculate={this.calculate}/>;
-    }
+    const navigate = useCallback((page) => {
+        if (page === "table")
+            dispatch({type: 'CALCULATE'});
+        setCurrentPage(page);
+    }, []);
+    
+    if (renderMobileLayout)
+        return (
+            <div id="mobile">
+                <MobileNavigation currentPage={currentPage} navigateTo={navigate}/>
+                {currentPage === "form" && <Form credit={credit} dispatch={dispatch} mobile navigateTo={navigate}/>}
+                {currentPage === "table" && <Calculation calculation={calculation}/>}
+            </div>  
+        );
+    else
+        return (
+            <div id="desktop" className="columns">
+                <div className="column col-xl-12 col-6">
+                    <Form credit={credit} dispatch={dispatch}/>
+                </div>
+                <div className="column col-xl-12 col-6">
+                    <Calculation calculation={calculation}/>
+                </div>
+            </div>
+        );
 }
 
 export default App;

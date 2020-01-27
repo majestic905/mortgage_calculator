@@ -26,6 +26,7 @@ $size-xl: 1520px;
 @import "~spectre.css/src/layout";
 
 // Components
+@import "~spectre.css/src/tabs";
 @import "~spectre.css/src/toasts";
 @import "~spectre.css/src/tooltips";
 
@@ -39,8 +40,13 @@ $size-xl: 1520px;
 
 // -----------------------------------------------
 
-.text-nowrap { white-space: nowrap; }
-.d-flex { align-items: center; }
+.text-nowrap {
+  white-space: nowrap;
+}
+
+.d-flex {
+  justify-content: space-between;
+}
 
 #table th, #table td {
   &:not(:nth-child(1)):not(:nth-child(2)) {
@@ -67,16 +73,7 @@ $size-xl: 1520px;
     bottom: 0;
     left: 0;
     width: 100%;
-    margin: 0;
-    background: white;
-    
-    .btn {
-      text-transform: uppercase;
-      border-radius: 0;
-      &:focus { box-shadow: none; }
-      &:first-child { border-left: none; }
-      &:last-child { border-right: none; }
-    }
+    z-index: 2;
   }
 
   #form {
@@ -88,9 +85,6 @@ $size-xl: 1520px;
 
     .payment {
       margin-bottom: $unit-6;
-    }
-    .payment-header {
-      justify-content: space-between;
     }
   }
 
@@ -126,24 +120,20 @@ $size-xl: 1520px;
     .tooltip::after { white-space: pre-line; width: 440px; }
 
     .payment {
-      align-items: flex-start;
+      display: flex;
       margin-bottom: $unit-3;
-      &:last-child button {
-        margin-left: 1rem + $unit-2;
+
+      div:first-child span {
+        position: relative;
+        top: .4em;
       }
-    }
-    .payment-id {
-      flex: 0 0 1rem;
-      text-align: right;
-      position: relative;
-      top: .5em;
-    }
-    .payment-fields {
-      flex: 1;
-      margin: 0 (-$unit-1);
-      .column {
-        margin-bottom: $unit-2;
-        padding: 0 $unit-1;
+
+      .columns {
+        flex: 1;
+        margin: 0 (-$unit-1);
+        .column {
+          padding: 0 $unit-1;
+        }
       }
     }
 
