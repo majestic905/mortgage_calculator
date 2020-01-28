@@ -13,12 +13,10 @@ export default class Form extends React.Component {
     static propTypes = {
         dispatch: propTypes.func,
         credit: propTypes.object,
-        navigateTo: propTypes.func,
         mobile: propTypes.bool,
     };
 
-    calculateDesktop = () => this.props.dispatch({type: 'CALCULATE'});
-    calculateMobile = () => this.props.navigateTo("table");
+    calculate = () => this.props.dispatch({type: 'CALCULATE'});
 
     onChange = (ev) => this.props.dispatch({
         type: 'CHANGE_CREDIT',
@@ -51,8 +49,6 @@ export default class Form extends React.Component {
 
     render() {
         const {credit, mobile} = this.props;
-        const calculate = mobile ? this.calculateMobile : this.calculateDesktop;
-
         const {addPayment, removePayment, changePayment, onChange} = this;
 
         return (
@@ -67,7 +63,7 @@ export default class Form extends React.Component {
 
                         <div className="column col-lg-12 col-xl-6 col-12 mt-2">
                             <Percent value={credit.percent} onChange={onChange}/>
-                            <PaymentType value={credit.paymentType} onChange={onChange} renderTooltips={!mobile}/>
+                            <PaymentType value={credit.paymentType} onChange={onChange}/>
                             <PaymentDay value={credit.paymentDay} onChange={onChange}/>
                         </div>
                     </div>
@@ -77,7 +73,7 @@ export default class Form extends React.Component {
 
                 <Accordion name="accordion-payments" title="Досрочные погашения" defaultChecked={credit.payments.length !== 0}>
                     {credit.payments.map((payment, i) =>
-                        <div key={payment.key} className="payment d-flex">
+                        <div key={payment.key} className="payment">
                             <div className="mr-2">
                                 {i+1}.
                             </div>
@@ -89,20 +85,16 @@ export default class Form extends React.Component {
                                 <ExtraPayment.NextPaymentType index={i} value={payment.nextPaymentType} onChange={changePayment} removePayment={removePayment}/>
                             </div>
                             <div className="ml-2">
-                                <RemovePaymentButton mobile={mobile} onClick={removePayment} paymentIndex={i}/>
+                                <ExtraPayment.RemoveButton mobile={mobile} onClick={removePayment} paymentIndex={i}/>
                             </div>
                         </div>
                     )}
-                    <div className="px-1 py-1">
-                        <button type="button" className="btn btn-block" onClick={addPayment}><i className="icon icon-plus"/> Добавить досрочный платеж</button>
-                    </div>
+                    <ExtraPayment.AddButton id="add-extra-payment-button" mobile={mobile} onClick={addPayment}/>
                 </Accordion>
 
                 <div className="divider"/>
 
-                <div className="py-1">
-                    <button type="button" className="btn btn-block btn-primary" onClick={calculate}>Рассчитать</button>
-                </div>
+                <CalculateButton mobile={mobile} onClick={this.calculate} id="calculate-button"/>
             </form>
         )
     }
@@ -110,7 +102,7 @@ export default class Form extends React.Component {
 
 const Accordion = ({name, title, defaultChecked, children}) => {
     return (
-        <div className="accordion mb-2">
+        <div className="accordion">
             <input type="checkbox" id={name} name={name} hidden defaultChecked={defaultChecked}/>
             <label className="accordion-header h4" htmlFor={name}>
                 <i className="icon icon-arrow-right mr-1"/> {title}
@@ -126,7 +118,7 @@ const CreditSum = ({value, onChange}) => {
     return (
         <div className="form-group">
             <div className="col-4 col-sm-12">
-                <label className="form-label" htmlFor="sum">Сумма кредита (руб.)</label>
+                <label className="form-label" htmlFor="sum">Сумма кредита</label>
             </div>
             <div className="col-8 col-sm-12 d-flex">
                 <input required type="number" min="0" step="1" name="sum" id="sum" className="form-input" value={value} onChange={onChange}/>
@@ -177,19 +169,17 @@ const Percent = ({value, onChange}) => {
     )
 };
 
-const PaymentType = ({value, onChange, renderTooltips}) => {
-    const cls = cx("form-radio form-inline", {tooltip: renderTooltips});
-
+const PaymentType = ({value, onChange}) => {
     return (
         <div className="form-group">
             <div className="col-4 col-sm-12">
                 <label className="form-label" htmlFor="paymentType">Вид платежа</label>
             </div>
             <div className="col-8 col-sm-12">
-                <label className={cls} data-tooltip="Аннуитетный платеж – вариант ежемесячного платежа по кредиту, когда размер ежемесячного платежа остаётся постоянным на всём периоде кредитования.">
+                <label className="form-radio form-inline" data-tooltip="Аннуитетный платеж – вариант ежемесячного платежа по кредиту, когда размер ежемесячного платежа остаётся постоянным на всём периоде кредитования.">
                     <input type="radio" name="paymentType" value="annuity" checked={value === "annuity"} onChange={onChange}/><i className="form-icon"/> Аннуитетный
                 </label>
-                <label className={cls} data-tooltip="Дифференцированный платеж – вариант ежемесячного платежа по кредиту, когда размер ежемесячного платежа по погашению кредита постепенно уменьшается к концу периода кредитования.">
+                <label className="form-radio form-inline" data-tooltip="Дифференцированный платеж – вариант ежемесячного платежа по кредиту, когда размер ежемесячного платежа по погашению кредита постепенно уменьшается к концу периода кредитования.">
                     <input type="radio" name="paymentType" value="differentiated" checked={value === "differentiated"} onChange={onChange}/><i className="form-icon"/> Дифференцированный
                 </label>
             </div>
@@ -216,21 +206,6 @@ const PaymentDay = ({value, onChange}) => {
     )
 };
 
-const RemovePaymentButton = ({mobile, paymentIndex, onClick}) => {
-    if (mobile)
-        return (
-            <button type="button" className="btn btn-sm" onClick={onClick} data-id={paymentIndex}>
-                <i className="icon icon-cross"/> Удалить
-            </button>
-        );
-
-    return (
-        <button type="button" className="btn btn-action" onClick={onClick} data-id={paymentIndex}>
-            <i className="icon icon-cross"/>
-        </button>
-    )
-};
-
 const ExtraPayment = {
     Period: ({index, value, onChange}) => {
         return (
@@ -246,6 +221,7 @@ const ExtraPayment = {
             </div>
         )
     },
+
     StartDate: ({index, value, onChange}) => {
         return (
             <div className="column col-sm-6 col-lg-4 col-xl-2 col-4">
@@ -253,6 +229,7 @@ const ExtraPayment = {
             </div>
         )
     },
+
     Sum: ({index, value, onChange}) => {
         return (
             <div className="column col-sm-6 col-lg-4 col-xl-2 col-4">
@@ -260,6 +237,7 @@ const ExtraPayment = {
             </div>
         )
     },
+
     ReduceType: ({index, value, onChange}) => {
         return (
             <div className="column col-md-12 col-lg-6 col-xl-3 col-6">
@@ -270,6 +248,7 @@ const ExtraPayment = {
             </div>
         )
     },
+
     NextPaymentType: ({index, value, onChange}) => {
         return (
             <div className="column col-md-12 col-lg-6 col-xl-3 col-6 d-flex">
@@ -279,5 +258,34 @@ const ExtraPayment = {
                 </select>
             </div>
         )
+    },
+
+    RemoveButton: ({mobile, paymentIndex, onClick}) => {
+        if (mobile)
+            return (
+                <button type="button" className="btn btn-sm" onClick={onClick} data-id={paymentIndex}>
+                    <i className="icon icon-cross"/> Удалить
+                </button>
+            );
+    
+        return (
+            <button type="button" className="btn btn-action" onClick={onClick} data-id={paymentIndex}>
+                <i className="icon icon-cross"/>
+            </button>
+        )
+    },
+
+    AddButton: ({mobile, ...rest}) => { // rest is {onClick, id}
+        const className = cx("btn", {"btn-block": mobile});
+        return (
+            <button type="button" className={className} {...rest}>
+                <i className="icon icon-plus"/> Добавить досрочный платеж
+            </button>
+        )
     }
 };
+
+const CalculateButton = ({mobile, ...rest}) => { // rest is {onClick, id}
+    const className = cx("btn btn-primary", {"btn-block": mobile, "btn-lg": !mobile});
+    return <button type="button" className={className} {...rest}>Рассчитать</button>;
+}

@@ -60,17 +60,23 @@ const App = () => {
     const isMobilePathname = window.location.pathname === "/mobile";
     const renderMobileLayout = isMobilePathname || isMobileDevice;
 
-    const navigate = useCallback((page) => {
+    const navigateTo = useCallback((page) => {
         if (page === "table")
             dispatch({type: 'CALCULATE'});
         setCurrentPage(page);
     }, []);
-    
+
+    const calculate = useCallback(() => {
+        if (renderMobileLayout)
+            setCurrentPage("table");
+        dispatch({type: 'CALCULATE'});
+    }, [renderMobileLayout]);
+
     if (renderMobileLayout)
         return (
             <div id="mobile">
-                <MobileNavigation currentPage={currentPage} navigateTo={navigate}/>
-                {currentPage === "form" && <Form credit={credit} dispatch={dispatch} mobile navigateTo={navigate}/>}
+                <MobileNavigation currentPage={currentPage} navigateTo={navigateTo}/>
+                {currentPage === "form" && <Form credit={credit} dispatch={dispatch} calculate={calculate} mobile/>}
                 {currentPage === "table" && <Calculation calculation={calculation}/>}
             </div>  
         );
@@ -78,13 +84,13 @@ const App = () => {
         return (
             <div id="desktop" className="columns">
                 <div className="column col-xl-12 col-6">
-                    <Form credit={credit} dispatch={dispatch}/>
+                    <Form credit={credit} dispatch={dispatch} calculate={calculate}/>
                 </div>
                 <div className="column col-xl-12 col-6">
                     <Calculation calculation={calculation}/>
                 </div>
             </div>
-        );
+        );    
 }
 
 export default App;
