@@ -39,21 +39,6 @@ $size-xl: 1520px;
 
 // -----------------------------------------------
 
-#table {
-  th, td {
-    &:not(:nth-child(1)):not(:nth-child(2)) {
-      text-align: right;
-    }
-  }
-  tfoot td {
-    border: none;
-  }
-}
-
-#stats td:nth-child(2) {
-  text-align: right;
-}
-
 #form {
   padding: $unit-4 $unit-4;
 
@@ -81,6 +66,7 @@ $size-xl: 1520px;
   }
 
   .payment {
+    margin: $unit-3 0;
     display: flex;
     .columns {
       flex: 1;
@@ -91,6 +77,29 @@ $size-xl: 1520px;
       }
     }
   }
+
+  #calculate-button-wrapper {
+    margin: $unit-5 0 $unit-1 0;
+  }
+}
+
+#calculation {
+  padding: $unit-2 $unit-2;
+}
+
+#table {
+  th, td {
+    &:not(:nth-child(1)):not(:nth-child(2)) {
+      text-align: right;
+    }
+  }
+  tfoot td {
+    border: none;
+  }
+}
+
+#stats td:nth-child(2) {
+  text-align: right;
 }
 
 #mobile {
@@ -103,14 +112,13 @@ $size-xl: 1520px;
     left: 0;
     width: 100%;
     z-index: 2;
+    button { border-radius: 0; }
+    button:first-child { border-left: 0; }
+    button:last-child { border-right: 0; }
   }
 }
 
 @media (max-width: $size-md) {
-  #calculation {
-    padding: $unit-2 $unit-2;
-  }
-
   #table {
     font-size: 0.7rem;
 
@@ -131,7 +139,6 @@ $size-xl: 1520px;
     }
 
     .payment {
-      margin-bottom: $unit-6;
       flex-wrap: wrap;
 
       > div:first-child {
@@ -159,13 +166,13 @@ $size-xl: 1520px;
   }
 
   #calculation {
-    @include shadow-variant(.05rem);
     padding: $unit-2 $unit-4;
     #stats { display: none; }
     #table th, #table td { padding: $unit-1 $unit-2; }
   }
 
-  #error {
+  #calculation, error {
+    margin-top: $unit-4;
     @include shadow-variant(.05rem);
   }
 
@@ -173,7 +180,6 @@ $size-xl: 1520px;
     @include shadow-variant(.05rem);
 
     .payment {
-      margin: $unit-3 0;
       align-items: flex-start;
 
       > div:first-child {
@@ -183,31 +189,24 @@ $size-xl: 1520px;
         text-align: right;
       }
     }
-
-    #add-extra-payment-button, #calculate-button {
-      margin-left: $unit-8; // (.payment div:first-child) flex-basis + margin-right
-    }
-  }
-}
-
-@media (max-width: $size-xl) {
-  #calculation, #error {
-    margin-top: $unit-4;
   }
 }
 
 @media (min-width: $size-xl) {
+  #calculation, #error {
+    margin-top: 0;
+  }
+
   #form, #calculation {
     height: calc(100vh - 2rem);
     overflow-y: scroll;
   }
 
-  #table, #add-extra-payment-button {
-    margin-bottom: $unit-2;
+  #form #calculate-button-wrapper {
+    margin-bottom: $unit-5;
   }
 
-  #calculate-button {
-    margin-top: $unit-2;
-    margin-bottom: $unit-4;
+  #table {
+    margin-bottom: $unit-2;
   }
 }

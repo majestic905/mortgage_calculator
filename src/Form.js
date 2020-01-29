@@ -14,9 +14,8 @@ export default class Form extends React.Component {
         dispatch: propTypes.func,
         credit: propTypes.object,
         mobile: propTypes.bool,
+        calculate: propTypes.func,
     };
-
-    calculate = () => this.props.dispatch({type: 'CALCULATE'});
 
     onChange = (ev) => this.props.dispatch({
         type: 'CHANGE_CREDIT',
@@ -48,7 +47,7 @@ export default class Form extends React.Component {
     };
 
     render() {
-        const {credit, mobile} = this.props;
+        const {credit, mobile, calculate} = this.props;
         const {addPayment, removePayment, changePayment, onChange} = this;
 
         return (
@@ -89,12 +88,18 @@ export default class Form extends React.Component {
                             </div>
                         </div>
                     )}
-                    <ExtraPayment.AddButton id="add-extra-payment-button" mobile={mobile} onClick={addPayment}/>
+                    <div className="payment">
+                        <div className="mr-2"/>
+                        <ExtraPayment.AddButton mobile={mobile} onClick={addPayment}/>
+                    </div>
                 </Accordion>
 
                 <div className="divider"/>
 
-                <CalculateButton mobile={mobile} onClick={this.calculate} id="calculate-button"/>
+                <div id="calculate-button-wrapper" className="payment">
+                    <div className="mr-2"/>
+                    <CalculateButton mobile={mobile} onClick={calculate}/>
+                </div>
             </form>
         )
     }
@@ -275,17 +280,17 @@ const ExtraPayment = {
         )
     },
 
-    AddButton: ({mobile, ...rest}) => { // rest is {onClick, id}
+    AddButton: ({mobile, onClick}) => {
         const className = cx("btn", {"btn-block": mobile});
         return (
-            <button type="button" className={className} {...rest}>
+            <button type="button" className={className} onClick={onClick}>
                 <i className="icon icon-plus"/> Добавить досрочный платеж
             </button>
         )
     }
 };
 
-const CalculateButton = ({mobile, ...rest}) => { // rest is {onClick, id}
+const CalculateButton = ({mobile, onClick}) => {
     const className = cx("btn btn-primary", {"btn-block": mobile, "btn-lg": !mobile});
-    return <button type="button" className={className} {...rest}>Рассчитать</button>;
+    return <button type="button" className={className} onClick={onClick}>Рассчитать</button>;
 }
