@@ -1,0 +1,15 @@
+#settings {
+  margin: 3rem 1rem 1rem 1rem;
+
+  .form-group:first-child {
+    margin-bottom: 2rem;
+  }
+
+  .form-group:not(:first-child) {
+    margin-bottom: 1rem;
+  }
+
+  .form-group:last-child {
+    margin-top: 2rem;
+  }
+}

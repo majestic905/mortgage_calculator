@@ -26,4 +26,5 @@ yarn-error.log*
 /.vscode
 .firebaserc
 /.firebase
+.env
 data.txt

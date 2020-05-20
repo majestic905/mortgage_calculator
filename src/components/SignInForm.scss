@@ -1,0 +1,17 @@
+#sign-in-form {
+  margin: 3rem 1rem 1rem 1rem;
+
+  .form-group:last-child {
+    margin-top: 2rem;
+  }
+
+  button {
+    //font-variant: all-small-caps;
+    font-size: 15px;
+    text-transform: uppercase;
+  }
+}
+
+#desktop #sign-in-form {
+  max-width: 16rem;
+}

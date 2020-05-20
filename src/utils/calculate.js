@@ -69,25 +69,6 @@ class ExtraPayment extends Payment {
     }
 }
 
-export default function calculate(credit) {
-    if (!credit.sum || !credit.monthsNum || !credit.percent || !credit.startDate || !credit.paymentType ||
-        credit.payments.some(payment => !payment.startDate || !payment.sum))
-        throw Error("Не все необходимые поля заполнены");
-
-    let monthsNum = parseInt(credit.monthsNum, 10);
-    let balance = parseInt(credit.sum, 10);
-    const percent = parseFloat(credit.percent)/100;
-    const {startDate, payments, paymentType} = credit;
-
-    const paymentDay = credit.paymentDay === 'issue_day' ? parseInt(startDate.slice(-2), 10)
-        : credit.paymentDay === 'last_day_of_month' ? 31
-            : parseInt(credit.paymentDay, 10);
-
-    return paymentType === "annuity"
-        ? calcAnnuity({startDate, monthsNum, balance, percent, payments, paymentDay})
-        : calcDifferentiated({startDate, monthsNum, balance, percent, payments, paymentDay});
-}
-
 function calcAnnuity({startDate, monthsNum, balance, percent, payments, paymentDay}) {
     payments = [
         new RegularPayment({startDate, paymentDay, sum: calcAnnuityPMT(balance, monthsNum, percent)}),
@@ -198,4 +179,33 @@ function calcDifferentiated({startDate, monthsNum, balance, percent, payments, p
     }
 
     return data;
+}
+
+function calculate(credit) {
+    if (!credit.sum || !credit.monthsNum || !credit.percent || !credit.startDate || !credit.paymentType ||
+        credit.payments.some(payment => !payment.startDate || !payment.sum))
+        throw Error("Не все необходимые поля заполнены");
+
+    let monthsNum = parseInt(credit.monthsNum, 10);
+    let balance = parseInt(credit.sum, 10);
+    const percent = parseFloat(credit.percent)/100;
+    const {startDate, payments, paymentType} = credit;
+
+    const paymentDay = credit.paymentDay === 'issue_day' ? parseInt(startDate.slice(-2), 10)
+        : credit.paymentDay === 'last_day_of_month' ? 31
+            : parseInt(credit.paymentDay, 10);
+
+    return paymentType === "annuity"
+        ? calcAnnuity({startDate, monthsNum, balance, percent, payments, paymentDay})
+        : calcDifferentiated({startDate, monthsNum, balance, percent, payments, paymentDay});
+}
+
+export default function(credit) {
+    const calculation = {};
+    try {
+        calculation.data = calculate(credit);
+    } catch (error) {
+        calculation.error = error;
+    }
+    return calculation;
 }

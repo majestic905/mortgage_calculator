@@ -5,11 +5,12 @@
   "private": true,
   "dependencies": {
     "classnames": "^2.2.6",
-    "node-sass": "^4.12.0",
+    "firebase": "^7.14.4",
+    "node-sass": "^4.14.1",
     "prop-types": "^15.7.2",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "react-scripts": "^3.3.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-scripts": "^3.4.1",
     "spectre.css": "^0.5.8"
   },
   "scripts": {
@@ -23,14 +24,14 @@
   },
   "browserslist": {
     "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
+      "last 2 Chrome versions",
+      "last 2 Firefox versions",
+      "last 2 Edge versions"
     ],
     "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
+      "last 2 Chrome versions",
+      "last 2 Firefox versions",
+      "last 2 Edge versions"
     ]
   }
 }
