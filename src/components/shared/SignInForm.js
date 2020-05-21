@@ -25,11 +25,11 @@ const SignInForm = ({signIn}) => {
         <form id="sign-in-form" onSubmit={doSubmit}>
             <div className='form-group'>
                 <label htmlFor='email' className='form-label label-lg'>Email</label>
-                <input type='email' className='form-input input-lg' name='email' id='email' autoFocus/>
+                <input type='email' className='form-input input-lg' name='email' id='email' autoFocus required/>
             </div>
             <div className='form-group'>
                 <label htmlFor='password' className='form-label label-lg'>Пароль</label>
-                <input type='password' className='form-input input-lg' name='password' id='password'/>
+                <input type='password' className='form-input input-lg' name='password' id='password' required/>
             </div>
             <div className='form-group'>
                 {errorMessage && <div className="toast toast-error mb-2">{errorMessage}</div>}
