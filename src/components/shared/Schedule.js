@@ -37,9 +37,9 @@ const TableHeader = () => {
             <tr>
                 <th>№</th>
                 <th>Дата</th>
-                <th>Платеж по долгу</th>
-                <th>Платеж по процентам</th>
-                <th>Сумма платежа</th>
+                <th>Основной долг</th>
+                <th>Проценты</th>
+                <th>Платеж</th>
                 <th>Остаток долга</th>
             </tr>
         </thead>
@@ -73,7 +73,7 @@ const TableFooter = ({totals}) => {
     )
 };
 
-const TableBody = ({data}) => {
+const TableBody = ({data, showPercentage}) => {
     return (
         <tbody>
             {data.map((item, i) => {
@@ -96,7 +96,7 @@ const TableBody = ({data}) => {
                             ? <td className="tooltip" data-tooltip={`↓ ${formatNumber(item.reduce)}`}>↓ {formatNumber(item.total)}</td>
                             : <td>{formatNumber(item.total)}</td>
                         }
-                        <td>{formatNumber(item.balance)} ({formatNumber(item.progress)}%)</td>
+                        <td>{formatNumber(item.balance)} {showPercentage && <span>({formatNumber(item.progress)}%)</span>}</td>
                     </tr>
                 )
             })}
@@ -104,17 +104,19 @@ const TableBody = ({data}) => {
     )
 }
 
-const Table = ({data, totals}) => {
+const Table = ({data, showPercentage, totals}) => {
     return (
         <table id="table" className="table">
             <TableHeader/>
-            <TableBody data={data}/>
+            <TableBody data={data} showPercentage={showPercentage}/>
             <TableFooter totals={totals}/>
         </table>
     )
 };
 
 const Schedule = React.memo(({schedule: {error, data}}) => {
+    const [showPercentage, setShowPercentage] = React.useState(true);
+
     if (error)
         return (
             <div id="error" className="toast toast-error">
@@ -140,7 +142,17 @@ const Schedule = React.memo(({schedule: {error, data}}) => {
     return (
         <div id="schedule">
             <Totals totals={totals} />
-            <Table data={data} totals={totals} />
+
+            <div className="divider"/>
+
+            <label className="form-switch">
+                <input type="checkbox" checked={showPercentage} onChange={ev => setShowPercentage(ev.target.checked)}/>
+                <i className="form-icon"/> Показывать прогресс
+            </label>
+
+            <div className="divider"/>
+
+            <Table data={data} showPercentage={showPercentage} totals={totals} />
         </div>
     )
 });
