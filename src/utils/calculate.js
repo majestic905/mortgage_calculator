@@ -80,7 +80,7 @@ function calcAnnuity({startDate, monthsNum, balance, percent, payments, paymentD
     ];
 
     let currentDate = new Date(startDate);
-    let loan = 0, interest = 0;
+    let principal = 0, interest = 0;
     let nextOnlyInterest = false;
     let monthsPassed = 0;
     const data = [];
@@ -96,12 +96,12 @@ function calcAnnuity({startDate, monthsNum, balance, percent, payments, paymentD
             const isRegular = !!payment.index;
             interest = parseFloat(interest.toFixed(2));
             // nextOnlyInterest can be true only after extra payment, since regular payment always yields {nextPaymentType: 'no_changes'}
-            loan = isRegular && nextOnlyInterest ? 0 : Math.min(payment.sum - interest, balance);
+            principal = isRegular && nextOnlyInterest ? 0 : Math.min(payment.sum - interest, balance);
             nextOnlyInterest = payment.nextPaymentType === 'only_interest';
             monthsPassed += isRegular;
 
             // regular payment cannot satisfy the next condition since payment.sum is precalculated
-            if (loan < 0) { // i.e. payment.sum < interest
+            if (principal < 0) { // i.e. payment.sum < interest
                 payment.error = 'Внесенной суммы недостаточно для уплаты процентов. Платеж не засчитан.';
                 data.push(payment);
                 nextOnlyInterest = false;
@@ -111,14 +111,14 @@ function calcAnnuity({startDate, monthsNum, balance, percent, payments, paymentD
             // regular payment always yields {reduceType: 'reduce_period'}
             if (payment.reduceType === "reduce_sum") {
                 monthsNum = calcMonthsNum(payments[0].sum, balance, percent) - (monthsPassed > 0);
-                const pmt = calcAnnuityPMT(balance - loan, monthsNum, percent);
+                const pmt = calcAnnuityPMT(balance - principal, monthsNum, percent);
                 payment.reduce = payments[0].sum - pmt;
                 payments[0].sum = pmt;
                 monthsPassed = 0;
             }
 
-            balance -= loan;
-            data.push({...payment, interest, loan, total: interest + loan, balance});
+            balance -= principal;
+            data.push({...payment, interest, principal, total: interest + principal, balance});
             interest = 0;
         }
     }
@@ -137,7 +137,7 @@ function calcDifferentiated({startDate, monthsNum, balance, percent, payments, p
     ];
 
     let currentDate = new Date(startDate);
-    let loan = 0, interest = 0;
+    let principal = 0, interest = 0;
     let nextOnlyInterest = false;
     let monthsPassed = 0;
     const data = [];
@@ -153,11 +153,11 @@ function calcDifferentiated({startDate, monthsNum, balance, percent, payments, p
             const isRegular = !!payment.index;
             interest = parseFloat(interest.toFixed(2));
             // nextOnlyInterest can be true only after extra payment, since regular payment always yields {nextPaymentType: 'no_changes'}
-            loan = isRegular ? (nextOnlyInterest ? 0 : Math.min(payment.sum, balance)) : Math.min(payment.sum - interest, balance);
+            principal = isRegular ? (nextOnlyInterest ? 0 : Math.min(payment.sum, balance)) : Math.min(payment.sum - interest, balance);
             nextOnlyInterest = payment.nextPaymentType === 'only_interest';
             monthsPassed += isRegular;
 
-            if (loan < 0) {
+            if (principal < 0) {
                 payment.error = 'Внесенной суммы досрочного погашения недостаточно для уплаты процентов. Платеж не засчитан.';
                 data.push(payment);
                 continue;
@@ -166,14 +166,14 @@ function calcDifferentiated({startDate, monthsNum, balance, percent, payments, p
             // regular payment always yields {reduceType: 'reduce_period'}
             if (payment.reduceType === "reduce_sum") {
                 monthsNum = Math.ceil(balance / payments[0].sum - 0.01) - (monthsPassed > 0);
-                const pmt = parseFloat(((balance - loan) / monthsNum).toFixed(2));
+                const pmt = parseFloat(((balance - principal) / monthsNum).toFixed(2));
                 payment.reduce = payments[0].sum - pmt;
                 payments[0].sum = pmt;
                 monthsPassed = 0;
             }
 
-            balance -= loan;
-            data.push({...payment, interest, loan, total: interest + loan, balance});
+            balance -= principal;
+            data.push({...payment, interest, principal, total: interest + principal, balance});
             interest = 0;
         }
     }

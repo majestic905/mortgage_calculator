@@ -84,10 +84,10 @@ $size-xl: 1520px;
   }
 }
 
-#calculation {
+#schedule {
   padding: $unit-2 $unit-2;
 
-  #stats td:nth-child(2) {
+  #totals td:nth-child(2) {
     text-align: right;
   }
 
@@ -155,13 +155,13 @@ $size-xl: 1520px;
     margin: 0 auto;
   }
 
-  #calculation {
+  #schedule {
     padding: $unit-2 $unit-4;
-    #stats { display: none; }
+    #totals { display: none; }
     #table th, #table td { padding: $unit-1 $unit-2; }
   }
 
-  #calculation, error {
+  #schedule, error {
     margin-top: $unit-4;
     @include shadow-variant(.05rem);
   }
@@ -183,11 +183,11 @@ $size-xl: 1520px;
 }
 
 @media (min-width: $size-xl) {
-  #calculation, #error {
+  #schedule, #error {
     margin-top: 0;
   }
 
-  #form, #calculation {
+  #form, #schedule {
     height: calc(100vh - 2rem);
     overflow-y: scroll;
   }

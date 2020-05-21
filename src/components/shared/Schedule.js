@@ -1,4 +1,4 @@
-import React, {memo} from 'react';
+import React from 'react';
 import propTypes from 'prop-types';
 
 const formatOptions = {
@@ -10,21 +10,21 @@ const formatOptions = {
 
 const formatNumber = (n) => n.toLocaleString('en-US', formatOptions);
 
-const Stats = ({totalValues}) => {
+const Totals = ({totals}) => {
     return (
-        <table id="stats" className="mb-2">
+        <table id="totals" className="mb-2">
             <tbody>
                 <tr>
                     <td>Сумма кредита:</td>
-                    <td className="text-bold">{totalValues.loan}</td>
+                    <td className="text-bold">{totals.principal}</td>
                 </tr>
                 <tr>
                     <td>Сумма процентов:</td>
-                    <td className="text-bold">{totalValues.interest}</td>
+                    <td className="text-bold">{totals.interest}</td>
                 </tr>
                 <tr>
                     <td>Выплачено всего:</td>
-                    <td className="text-bold">{totalValues.loanWithInterest}</td>
+                    <td className="text-bold">{totals.total}</td>
                 </tr>
             </tbody>
         </table>
@@ -46,24 +46,24 @@ const TableHeader = () => {
     )
 };
 
-const TableFooter = ({totalValues}) => {
+const TableFooter = ({totals}) => {
     return (
         <tfoot>
             <tr>
                 <td />
                 <td />
                 <td>
-                    <span className="text-bold">{totalValues.loan}</span>
+                    <span className="text-bold">{totals.principal}</span>
                     <br />
                     <span className="text-gray">(Сумма кредита)</span>
                 </td>
                 <td>
-                    <span className="text-bold">{totalValues.interest}</span>
+                    <span className="text-bold">{totals.interest}</span>
                     <br />
                     <span className="text-gray">(Сумма процентов)</span>
                 </td>
                 <td>
-                    <span className="text-bold">{totalValues.loanWithInterest}</span>
+                    <span className="text-bold">{totals.total}</span>
                     <br />
                     <span className="text-gray">(Выплачено всего)</span>
                 </td>
@@ -90,7 +90,7 @@ const TableBody = ({data}) => {
                     <tr key={i} className={!item.index ? 'text-success' : null}>
                         <td>{item.index}</td>
                         <td>{item.date}</td>
-                        <td>{formatNumber(item.loan)}</td>
+                        <td>{formatNumber(item.principal)}</td>
                         <td>{formatNumber(item.interest)}</td>
                         {item.reduce
                             ? <td className="tooltip" data-tooltip={`↓ ${formatNumber(item.reduce)}`}>↓ {formatNumber(item.total)}</td>
@@ -104,17 +104,17 @@ const TableBody = ({data}) => {
     )
 }
 
-const Table = ({data, totalValues}) => {
+const Table = ({data, totals}) => {
     return (
         <table id="table" className="table">
             <TableHeader/>
             <TableBody data={data}/>
-            <TableFooter totalValues={totalValues}/>
+            <TableFooter totals={totals}/>
         </table>
     )
 };
 
-const Calculation = memo(({calculation: {error, data}}) => {
+const Schedule = React.memo(({schedule: {error, data}}) => {
     if (error)
         return (
             <div id="error" className="toast toast-error">
@@ -125,31 +125,31 @@ const Calculation = memo(({calculation: {error, data}}) => {
     if (data.length === 0)
         return null;
 
-    const totalLoan = data.reduce((acc, val) => acc + (val.loan || 0), 0);
-    const totalInterest = data.reduce((acc, val) => acc + (val.interest || 0), 0);
+    const principal = data.reduce((acc, val) => acc + (val.principal || 0), 0);
+    const interest = data.reduce((acc, val) => acc + (val.interest || 0), 0);
 
     for (const item of data)
-        item.progress = (totalLoan - item.balance) / totalLoan * 100;
+        item.progress = (principal - item.balance) / principal * 100;
 
-    const totalValues = {
-        loan: formatNumber(totalLoan),
-        interest: formatNumber(totalInterest),
-        loanWithInterest: formatNumber(totalLoan + totalInterest),
+    const totals = {
+        principal: formatNumber(principal),
+        interest: formatNumber(interest),
+        total: formatNumber(principal + interest),
     }
 
     return (
-        <div id="calculation">
-            <Stats totalValues={totalValues} />
-            <Table data={data} totalValues={totalValues} />
+        <div id="schedule">
+            <Totals totals={totals} />
+            <Table data={data} totals={totals} />
         </div>
     )
 });
 
-Calculation.propTypes = {
-    calculation: propTypes.shape({
+Schedule.propTypes = {
+    schedule: propTypes.shape({
         data: propTypes.array,
         error: propTypes.instanceOf(Error),
     })
 }
 
-export default Calculation;
+export default Schedule;

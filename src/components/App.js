@@ -7,7 +7,7 @@ import ScreenPayments from "./mobile/ScreenPayments";
 
 import Form from "./desktop/Form";
 
-import Calculation from './shared/Calculation';
+import Schedule from './shared/Schedule';
 import Settings from "./shared/Settings"
 import SignInForm from "./shared/SignInForm";
 import Loading from "./shared/Loading"
@@ -24,23 +24,23 @@ const reducer = (state, action) => {
             return {...state, credit};
         }
         case 'CALCULATE': {
-            const calculation = calculate(state.credit);
-            return {...state, calculation, currentPage: "schedule"};
+            const schedule = calculate(state.credit);
+            return {...state, schedule, currentPage: "schedule"};
         }
         case 'SET_CURRENT_PAGE': {
             const page = action.payload.page;
-            const calculation = page === "schedule" ? calculate(state.credit) : state.calculation;
-            return {...state, currentPage: page, calculation};
+            const schedule = page === "schedule" ? calculate(state.credit) : state.schedule;
+            return {...state, currentPage: page, schedule};
         }
         case 'SET_THEME':
             return {...state, theme: action.payload.theme};
         case 'LOGGED_IN': {
             if (!action.payload)
                 return state;
-            const credit = {...state.credit, ...action.payload.credit};
+            const credit = {...state.credit, ...action.payload.credit}; // firebase doesn't store empty arrays (payments = [])
             const theme = action.payload.theme || state.theme;
-            const calculation = calculate(credit)
-            return {...state, theme, credit, calculation};
+            const schedule = calculate(credit)
+            return {...state, theme, credit, schedule};
         }
         default:
             return state;
@@ -60,18 +60,18 @@ const reducerInit = () => ({
         paymentDay: "issue_day",
         payments: []
     },
-    calculation: {data: [], error: null}
+    schedule: {data: [], error: null}
 });
 
 const App = () => {
-    const [{theme, currentPage, layout, credit, calculation}, dispatch] = useReducer(reducer, null, reducerInit);
+    const [{theme, currentPage, layout, credit, schedule}, dispatch] = useReducer(reducer, null, reducerInit);
     const {user, setTheme, setCredit, signIn, signOut} = useFirebase(dispatch);
 
     // we want to persist credit parameters after every successful calculation
     useEffect(() => {
-        if (user /* logged in */ && !calculation.error)
+        if (user /* logged in */ && !schedule.error)
             setCredit(credit);
-    }, [calculation, user, setCredit]);
+    }, [schedule, user, setCredit]);
 
     const navigateTo = useCallback((page) => dispatch({type: "SET_CURRENT_PAGE", payload: {page}}), []);
     const calculate = useCallback(() => dispatch({type: 'CALCULATE'}), []);
@@ -88,7 +88,7 @@ const App = () => {
                 <MobileNavigation currentPage={currentPage} navigateTo={navigateTo}/>
                 {currentPage === "params" && <ScreenParams credit={credit} dispatch={dispatch} calculate={calculate}/>}
                 {currentPage === "payments" && <ScreenPayments credit={credit} dispatch={dispatch} calculate={calculate}/>}
-                {currentPage === "schedule" && <Calculation calculation={calculation}/>}
+                {currentPage === "schedule" && <Schedule schedule={schedule}/>}
                 {currentPage === "settings" && <Settings theme={theme} setTheme={setTheme} signOut={signOut}/>}
             </div>
         );
@@ -100,7 +100,7 @@ const App = () => {
                 <Form credit={credit} dispatch={dispatch} calculate={calculate}/>
             </div>
             <div className="column col-xl-12 col-6">
-                <Calculation calculation={calculation}/>
+                <Schedule schedule={schedule}/>
             </div>
         </div>
     );
