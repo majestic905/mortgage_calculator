@@ -40,13 +40,6 @@ $size-xl: 1520px;
 
 // -----------------------------------------------
 
-button.btn {
-  //font-variant: all-small-caps;
-  text-transform: uppercase;
-  font-size: 14px;
-  &.btn-lg { font-size: 15px; }
-}
-
 #form {
   padding: $unit-4 $unit-4;
 
@@ -93,21 +86,21 @@ button.btn {
 
 #calculation {
   padding: $unit-2 $unit-2;
-}
 
-#table {
-  th, td {
-    &:not(:nth-child(1)):not(:nth-child(2)) {
-      text-align: right;
+  #stats td:nth-child(2) {
+    text-align: right;
+  }
+
+  #table {
+    th, td {
+      &:not(:nth-child(1)):not(:nth-child(2)) {
+        text-align: right;
+      }
+    }
+    tfoot td {
+      border: none;
     }
   }
-  tfoot td {
-    border: none;
-  }
-}
-
-#stats td:nth-child(2) {
-  text-align: right;
 }
 
 #mobile {

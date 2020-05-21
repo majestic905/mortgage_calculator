@@ -1,11 +1,16 @@
 import React, {useEffect, useCallback, useReducer} from 'react';
 import useFirebase from "../hooks/useFirebase";
 
-import MobileNavigation from "./MobileNavigation";
-import Form from "./Form";
-import Calculation from './Calculation';
-import Settings from "./Settings"
-import SignInForm from "./SignInForm";
+import MobileNavigation from "./mobile/MobileNavigation";
+import ScreenParams from "./mobile/ScreenParams";
+import ScreenPayments from "./mobile/ScreenPayments";
+
+import Form from "./desktop/Form";
+
+import Calculation from './shared/Calculation';
+import Settings from "./shared/Settings"
+import SignInForm from "./shared/SignInForm";
+import Loading from "./shared/Loading"
 
 import calculate from "../utils/calculate";
 
@@ -20,11 +25,11 @@ const reducer = (state, action) => {
         }
         case 'CALCULATE': {
             const calculation = calculate(state.credit);
-            return {...state, calculation, currentPage: "table"};
+            return {...state, calculation, currentPage: "schedule"};
         }
         case 'SET_CURRENT_PAGE': {
             const page = action.payload.page;
-            const calculation = page === "table" ? calculate(state.credit) : state.calculation;
+            const calculation = page === "schedule" ? calculate(state.credit) : state.calculation;
             return {...state, currentPage: page, calculation};
         }
         case 'SET_THEME':
@@ -44,7 +49,7 @@ const reducer = (state, action) => {
 
 const reducerInit = () => ({
     theme: "light",
-    currentPage: "form",
+    currentPage: "params",
     layout: /iPhone|iPad|Android/i.test(navigator.userAgent) ? "mobile" : "desktop",
     credit: {
         sum: "1000000",
@@ -72,7 +77,7 @@ const App = () => {
     const calculate = useCallback(() => dispatch({type: 'CALCULATE'}), []);
 
     if (user === undefined)
-        return <div className="loading loading-lg"/>;
+        return <Loading />
 
     if (user === null)
         return <SignInForm signIn={signIn}/>
@@ -81,8 +86,9 @@ const App = () => {
         return (
             <div id="mobile" className={`theme-${theme}`}>
                 <MobileNavigation currentPage={currentPage} navigateTo={navigateTo}/>
-                {currentPage === "form" && <Form credit={credit} dispatch={dispatch} calculate={calculate} mobile/>}
-                {currentPage === "table" && <Calculation calculation={calculation}/>}
+                {currentPage === "params" && <ScreenParams credit={credit} dispatch={dispatch} calculate={calculate}/>}
+                {currentPage === "payments" && <ScreenPayments credit={credit} dispatch={dispatch} calculate={calculate}/>}
+                {currentPage === "schedule" && <Calculation calculation={calculation}/>}
                 {currentPage === "settings" && <Settings theme={theme} setTheme={setTheme} signOut={signOut}/>}
             </div>
         );

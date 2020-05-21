@@ -12,4 +12,15 @@
   .form-group:last-child {
     margin-top: 2rem;
   }
+
+  .material-icons {
+    width: 1em;
+    height: 1em;
+    vertical-align: -20%;
+    margin-right: .2rem;
+  }
+
+  button:focus {
+    box-shadow: none;
+  }
 }
