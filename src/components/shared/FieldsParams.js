@@ -92,7 +92,7 @@ const PaymentDay = ({value, onChange}) => {
     )
 };
 
-const FieldsMain = React.memo(({credit, onChange}) => {
+const FieldsParams = React.memo(({credit, onChange}) => {
     return (
         <div className="form-horizontal columns">
             <div className="column col-lg-12 col-xl-6 col-12 mt-2">
@@ -110,4 +110,4 @@ const FieldsMain = React.memo(({credit, onChange}) => {
     )
 });
 
-export default FieldsMain;
+export default FieldsParams;

@@ -1,5 +1,5 @@
 import React from 'react';
-import FieldsMain from '../shared/FieldsMain';
+import FieldsParams from '../shared/FieldsParams';
 import CalculateButton from "../shared/CalculateButton";
 
 const ScreenParams = ({dispatch, credit, calculate}) => {
@@ -13,7 +13,7 @@ const ScreenParams = ({dispatch, credit, calculate}) => {
 
     return (
         <div id="form">
-            <FieldsMain credit={credit} onChange={onChange} />
+            <FieldsParams credit={credit} onChange={onChange} />
             <CalculateButton block onClick={calculate} />
         </div>
     )

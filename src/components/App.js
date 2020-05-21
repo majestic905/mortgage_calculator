@@ -19,6 +19,15 @@ import calculate from "../utils/calculate";
   
 const reducer = (state, action) => {
     switch (action.type) {
+        case 'CHANGE_PAYMENT': {
+
+        }
+        case 'ADD_PAYMENT': {
+
+        }
+        case 'REMOVE_PAYMENT': {
+
+        }
         case 'CHANGE_CREDIT': {
             const credit = {...state.credit, [action.payload.name]: action.payload.value};
             return {...state, credit};

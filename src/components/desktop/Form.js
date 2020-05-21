@@ -1,16 +1,7 @@
 import React from 'react';
 import CalculateButton from "../shared/CalculateButton";
-import FieldsMain from "../shared/FieldsMain";
-import FieldsExtra from "../shared/FieldsExtra";
-import propTypes from 'prop-types';
-import cx from "classnames";
-
-function generateEmptyPayment() {
-    return {
-        key: Math.random().toString(36).slice(2),
-        period: "0", startDate: "", nextPaymentType: "only_interest", reduceType: "reduce_sum", sum: "0"
-    }
-}
+import FieldsParams from "../shared/FieldsParams";
+import FieldsPayments from "../shared/FieldsPayments";
 
 const Accordion = ({name, title, defaultChecked, children}) => {
     return (
@@ -26,66 +17,35 @@ const Accordion = ({name, title, defaultChecked, children}) => {
     )
 };
 
-export default class Form extends React.Component {
-    static propTypes = {
-        dispatch: propTypes.func,
-        credit: propTypes.object,
-        mobile: propTypes.bool,
-        calculate: propTypes.func,
-    };
-
-    onChange = (ev) => this.props.dispatch({
+const Form = ({dispatch, credit, mobile, calculate}) => {
+    const onChange = React.useCallback(ev => dispatch({
         type: 'CHANGE_CREDIT',
         payload: {
             name: ev.target.name,
             value: ev.target.type === "checkbox" ? ev.target.checked : ev.target.value
         }
-    });
+    }), [dispatch]);
 
-    addPayment = () => {
-        const payments = this.props.credit.payments.slice();
-        payments.push(generateEmptyPayment());
-        this.onChange({target: {name: 'payments', value: payments}});
-    };
+    return (
+        <form id="form">
+            <Accordion name="accordion-details" title="Параметры кредита" defaultChecked={!mobile || credit.payments.length === 0}>
+                <FieldsParams credit={credit} onChange={onChange} />
+            </Accordion>
 
-    removePayment = (ev) => {
-        const id = parseInt(ev.currentTarget.dataset.id, 10);
-        const payments = this.props.credit.payments.slice();
-        payments.splice(id, 1);
-        this.onChange({target: {name: 'payments', value: payments}});
-    };
+            <div className="divider"/>
 
-    changePayment = (ev) => {
-        const [, i, field] = ev.target.name.split('.');
-        const payments = this.props.credit.payments.slice();
-        const index = parseInt(i, 10);
-        payments[index] = {...payments[index], [field]: ev.target.value};
-        this.onChange({target: {name: 'payments', value: payments}});
-    };
+            <Accordion name="accordion-payments" title="Досрочные погашения" defaultChecked={credit.payments.length !== 0}>
+                <FieldsPayments payments={credit.payments} onChange={onChange}/>
+            </Accordion>
 
-    render() {
-        const {credit, mobile, calculate} = this.props;
-        const {addPayment, removePayment, changePayment, onChange} = this;
+            <div className="divider"/>
 
-        return (
-            <form id="form">
-                <Accordion name="accordion-details" title="Параметры кредита" defaultChecked={!mobile || credit.payments.length === 0}>
-                    <FieldsMain credit={credit} onChange={onChange} />
-                </Accordion>
+            <div id="calculate-button-wrapper" className="payment">
+                <div className="mr-2"/>
+                <CalculateButton large onClick={calculate}/>
+            </div>
+        </form>
+    )
+};
 
-                <div className="divider"/>
-
-                <Accordion name="accordion-payments" title="Досрочные погашения" defaultChecked={credit.payments.length !== 0}>
-                    <FieldsExtra credit={credit} onChange={onChange} addPayment={addPayment} removePayment={removePayment} changePayment={changePayment}/>
-                </Accordion>
-
-                <div className="divider"/>
-
-                <div id="calculate-button-wrapper" className="payment">
-                    <div className="mr-2"/>
-                    <CalculateButton large onClick={calculate}/>
-                </div>
-            </form>
-        )
-    }
-}
+export default Form

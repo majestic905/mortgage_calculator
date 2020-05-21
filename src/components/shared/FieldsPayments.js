@@ -1,5 +1,4 @@
 import React from 'react';
-import propTypes from 'prop-types';
 import cx from "classnames";
 
 function generateEmptyPayment() {
@@ -77,8 +76,8 @@ const RemoveButton = ({mobile, paymentIndex, onClick}) => {
     )
 };
 
-const AddButton = ({mobile, onClick}) => {
-    const className = cx("btn", {"btn-block": mobile});
+const AddButton = ({block, onClick}) => {
+    const className = cx("btn", {"btn-block": block});
     return (
         <button type="button" className={className} onClick={onClick}>
             <i className="icon icon-plus"/> Добавить досрочный платеж
@@ -86,10 +85,31 @@ const AddButton = ({mobile, onClick}) => {
     )
 };
 
-const FieldsExtra = React.memo(({credit, mobile, addPayment, removePayment, changePayment}) => {
+const FieldsPayments = React.memo(({payments, mobile, onChange}) => {
+    const addPayment = () => {
+        const paymentz = payments.slice();
+        paymentz.push(generateEmptyPayment());
+        onChange({target: {name: 'payments', value: paymentz}});
+    };
+
+    const removePayment = (ev) => {
+        const id = parseInt(ev.currentTarget.dataset.id, 10);
+        const paymentz = payments.slice();
+        paymentz.splice(id, 1);
+        onChange({target: {name: 'payments', value: paymentz}});
+    };
+
+    const changePayment = (ev) => {
+        const [, i, field] = ev.target.name.split('.');
+        const paymentz = payments.slice();
+        const index = parseInt(i, 10);
+        paymentz[index] = {...paymentz[index], [field]: ev.target.value};
+        onChange({target: {name: 'payments', value: paymentz}});
+    };
+
     return (
         <React.Fragment>
-            {credit.payments.map((payment, i) =>
+            {payments.map((payment, i) =>
                 <div key={payment.key} className="payment">
                     <div className="mr-2">{i+1}.</div>
                     <div className="columns col-gapless">
@@ -106,10 +126,10 @@ const FieldsExtra = React.memo(({credit, mobile, addPayment, removePayment, chan
             )}
             <div className="payment">
                 <div className="mr-2"/>
-                <AddButton mobile={mobile} onClick={addPayment}/>
+                <AddButton block={mobile} onClick={addPayment}/>
             </div>
         </React.Fragment>
     )
 });
 
-export default FieldsExtra;
+export default FieldsPayments;
