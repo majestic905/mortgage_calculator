@@ -1,7 +1,11 @@
 import React from 'react';
-import CalculateButton from "../shared/CalculateButton";
+
+import Button from "../shared/Button";
 import FieldsParams from "../shared/FieldsParams";
 import FieldsPayments from "../shared/FieldsPayments";
+
+import './Form.scss';
+
 
 const Accordion = ({name, title, defaultChecked, children}) => {
     return (
@@ -42,7 +46,7 @@ const Form = ({dispatch, credit, mobile, calculate}) => {
 
             <div id="calculate-button-wrapper" className="payment">
                 <div className="mr-2"/>
-                <CalculateButton large onClick={calculate}/>
+                <Button large primary onClick={calculate} content="Рассчитать"/>
             </div>
         </form>
     )

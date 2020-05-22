@@ -1,6 +1,7 @@
 import React from 'react';
 import cx from "classnames";
 
+
 function generateEmptyPayment() {
     return {
         key: Math.random().toString(36).slice(2),

@@ -1,6 +1,6 @@
 import React from 'react';
 import FieldsParams from '../shared/FieldsParams';
-import CalculateButton from "../shared/CalculateButton";
+import Button from "../shared/Button";
 
 const ScreenParams = ({dispatch, credit, calculate}) => {
     const onChange = React.useCallback(ev => dispatch({
@@ -14,7 +14,7 @@ const ScreenParams = ({dispatch, credit, calculate}) => {
     return (
         <div id="form">
             <FieldsParams credit={credit} onChange={onChange} />
-            <CalculateButton block onClick={calculate} />
+            <Button block primary onClick={calculate} content="Рассчитать" />
         </div>
     )
 };

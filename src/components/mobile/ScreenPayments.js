@@ -1,6 +1,6 @@
 import React from 'react';
 import FieldsPayments from '../shared/FieldsPayments';
-import CalculateButton from "../shared/CalculateButton";
+import Button from "../shared/Button";
 
 
 const ScreenParams = ({dispatch, credit, calculate}) => {
@@ -15,7 +15,7 @@ const ScreenParams = ({dispatch, credit, calculate}) => {
     return (
         <div id="form">
             <FieldsPayments payments={credit.payments} mobile onChange={onChange}/>
-            <CalculateButton block onClick={calculate} />
+            <Button block primary onClick={calculate} content="Рассчитать" />
         </div>
     )
 };

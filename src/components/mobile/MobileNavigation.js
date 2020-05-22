@@ -12,22 +12,22 @@ const MobileNavigation = ({currentPage, navigateTo}) => {
         <div id="navigation" className="btn-group btn-group-block">
             <button type="button" {...buttonParams("params")}>
                 <span className="material-icons">edit</span>
-                <span className="small-caps">Параметры</span>
+                <span>Параметры</span>
             </button>
 
             <button type="button" {...buttonParams("payments")}>
                 <span className="material-icons">list_alt</span>
-                <span className="small-caps">Платежи</span>
+                <span>Платежи</span>
             </button>
 
             <button type="button" {...buttonParams("schedule")}>
                 <span className="material-icons">table_chart</span>
-                <span className="small-caps">График</span>
+                <span>График</span>
             </button>
 
             <button type="button" {...buttonParams("settings")}>
                 <span className="material-icons">settings</span>
-                <span className="small-caps">Настройки</span>
+                <span>Настройки</span>
             </button>
         </div>
     );

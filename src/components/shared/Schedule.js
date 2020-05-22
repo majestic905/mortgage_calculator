@@ -1,6 +1,9 @@
 import React from 'react';
 import propTypes from 'prop-types';
 
+import './Schedule.scss';
+
+
 const formatOptions = {
     style: 'decimal',
     minimumIntegerDigits: 2,

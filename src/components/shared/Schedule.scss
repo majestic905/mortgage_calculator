@@ -1,0 +1,64 @@
+@import "~spectre.css/src/variables";
+@import "~spectre.css/src/mixins";
+
+#schedule {
+  padding: $unit-2 $unit-2;
+}
+
+#totals td:nth-child(2) {
+  text-align: right;
+}
+
+#table {
+  th, td {
+    &:not(:nth-child(1)):not(:nth-child(2)) {
+      text-align: right;
+    }
+  }
+  tfoot td {
+    border: none;
+  }
+}
+
+@media (max-width: $size-md) {
+  #table {
+    font-size: 0.7rem;
+
+    tfoot {
+      display: none;
+    }
+    th, td {
+      &:nth-child(1), &:nth-child(3), &:nth-child(4) {
+        display: none;
+      }
+    }
+
+    td:nth-child(5) {
+      user-select: none;
+    }
+  }
+}
+
+@media (min-width: $size-md) {
+  #schedule {
+    padding: $unit-2 $unit-4;
+  }
+
+  #totals { display: none; }
+  #table th, #table td { padding: $unit-1 $unit-2; }
+
+  #schedule, #error {
+    margin-top: $unit-4;
+    @include shadow-variant(.05rem);
+  }
+}
+
+@media (min-width: $size-xl) {
+  #schedule, #error {
+    margin-top: 0;
+  }
+
+  #table {
+    margin-bottom: $unit-2;
+  }
+}

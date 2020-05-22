@@ -1,0 +1,93 @@
+@import "~spectre.css/src/variables";
+@import "~spectre.css/src/mixins";
+
+#form {
+  padding: $unit-4 $unit-4;
+
+  .text-nowrap {
+    white-space: nowrap;
+  }
+
+  .d-flex {
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .accordion input:checked ~ .accordion-body, .accordion[open] .accordion-body {
+    max-height: 1000rem;
+  }
+
+  .tooltip::after {
+    white-space: pre-line;
+    width: 440px;
+  }
+
+  .form-horizontal {
+    padding: 0;
+    margin-bottom: $unit-4;
+  }
+
+  #calculate-button-wrapper {
+    margin: $unit-5 0 $unit-1 0;
+  }
+}
+
+#form .payment {
+  margin: $unit-3 0;
+  display: flex;
+  .columns {
+    flex: 1;
+    margin: 0 (-$unit-1);
+    .column {
+      padding: 0 $unit-1;
+      margin-bottom: $unit-2;
+    }
+  }
+}
+
+@media (max-width: $size-md) {
+  #form .tooltip::after {
+    display: none;
+  }
+
+  #form .payment {
+    flex-wrap: wrap;
+
+    > div:first-child {
+      order: 1;
+      flex: 1;
+      // .h5
+      font-weight: 500;
+      font-size: 1rem;
+    }
+    > div:last-child {order: 2;}
+    .columns {
+      order: 3;
+      flex-basis: 100%;
+      margin-top: $unit-2;
+    }
+  }
+}
+
+@media (min-width: $size-md) {
+  #form {
+    @include shadow-variant(.05rem);
+  }
+
+  #form .payment {
+    align-items: flex-start;
+
+    > div:first-child {
+      flex: 0 0 $unit-6;
+      position: relative;
+      top: .4em;
+      text-align: right;
+    }
+  }
+}
+
+@media (min-width: $size-xl) {
+  #form #calculate-button-wrapper {
+    margin-bottom: $unit-5;
+  }
+}

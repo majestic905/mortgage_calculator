@@ -13,6 +13,7 @@ import SignInForm from "./shared/SignInForm";
 import Loading from "./shared/Loading"
 
 import calculate from "../utils/calculate";
+import './App.scss';
 
 
 // TODO: every month 10k extra payment with default values leads to negative reduce in regular payment
