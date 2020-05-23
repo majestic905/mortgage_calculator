@@ -3,18 +3,10 @@ import FieldsPayments from '../shared/FieldsPayments';
 import Button from "../shared/Button";
 
 
-const ScreenParams = ({dispatch, credit, calculate}) => {
-    const onChange = React.useCallback(ev => dispatch({
-        type: 'CHANGE_CREDIT',
-        payload: {
-            name: ev.target.name,
-            value: ev.target.type === "checkbox" ? ev.target.checked : ev.target.value
-        }
-    }), [dispatch]);
-
+const ScreenParams = ({dispatch, payments, calculate}) => {
     return (
         <div id="form">
-            <FieldsPayments payments={credit.payments} mobile onChange={onChange}/>
+            <FieldsPayments mobile payments={payments} dispatch={dispatch}/>
             <Button block primary onClick={calculate} content="Рассчитать" />
         </div>
     )

@@ -92,7 +92,15 @@ const PaymentDay = ({value, onChange}) => {
     )
 };
 
-const FieldsParams = React.memo(({credit, onChange}) => {
+const FieldsParams = React.memo(({credit, dispatch}) => {
+    const onChange = React.useCallback(ev => dispatch({
+        type: 'CHANGE_CREDIT',
+        payload: {
+            name: ev.target.name,
+            value: ev.target.type === "checkbox" ? ev.target.checked : ev.target.value
+        }
+    }), [dispatch]);
+
     return (
         <div className="form-horizontal columns">
             <div className="column col-lg-12 col-xl-6 col-12 mt-2">

@@ -1,13 +1,7 @@
-import React from 'react';
+import React, {useState, useCallback} from 'react';
 import cx from "classnames";
 
-
-function generateEmptyPayment() {
-    return {
-        key: Math.random().toString(36).slice(2),
-        period: "0", startDate: "", nextPaymentType: "only_interest", reduceType: "reduce_sum", sum: "0"
-    }
-}
+function key() { return Math.random().toString(36).slice(2); }
 
 const Period = ({index, value, onChange}) => {
     return (
@@ -86,32 +80,29 @@ const AddButton = ({block, onClick}) => {
     )
 };
 
-const FieldsPayments = React.memo(({payments, mobile, onChange}) => {
-    const addPayment = () => {
-        const paymentz = payments.slice();
-        paymentz.push(generateEmptyPayment());
-        onChange({target: {name: 'payments', value: paymentz}});
-    };
+const FieldsPayments = React.memo(({payments, mobile, dispatch}) => {
+    const [keys, setKeys] = useState(() => payments.map(key));
 
-    const removePayment = (ev) => {
+    const addPayment = useCallback(() => {
+        dispatch({type: 'ADD_PAYMENT'});
+        setKeys(keys => [...keys, key()]);
+    }, [dispatch, setKeys]);
+    const removePayment = useCallback(ev => {
         const id = parseInt(ev.currentTarget.dataset.id, 10);
-        const paymentz = payments.slice();
-        paymentz.splice(id, 1);
-        onChange({target: {name: 'payments', value: paymentz}});
-    };
-
-    const changePayment = (ev) => {
-        const [, i, field] = ev.target.name.split('.');
-        const paymentz = payments.slice();
-        const index = parseInt(i, 10);
-        paymentz[index] = {...paymentz[index], [field]: ev.target.value};
-        onChange({target: {name: 'payments', value: paymentz}});
-    };
+        dispatch({type: 'REMOVE_PAYMENT', payload: {id}});
+        setKeys(keys => keys.filter((_, i) => i !== id));
+    }, [dispatch, setKeys]);
+    const changePayment = useCallback(ev => {
+        const [, i, name] = ev.target.name.split('.');
+        const id = parseInt(i, 10);
+        const value = ev.target.value;
+        dispatch({type: 'CHANGE_PAYMENT', payload: {id, name, value}});
+    }, [dispatch]);
 
     return (
         <React.Fragment>
             {payments.map((payment, i) =>
-                <div key={payment.key} className="payment">
+                <div key={keys[i]} className="payment">
                     <div className="mr-2">{i+1}.</div>
                     <div className="columns col-gapless">
                         <Period index={i} value={payment.period} onChange={changePayment}/>

@@ -21,32 +21,24 @@ const Accordion = ({name, title, defaultChecked, children}) => {
     )
 };
 
-const Form = ({dispatch, credit, mobile, calculate}) => {
-    const onChange = React.useCallback(ev => dispatch({
-        type: 'CHANGE_CREDIT',
-        payload: {
-            name: ev.target.name,
-            value: ev.target.type === "checkbox" ? ev.target.checked : ev.target.value
-        }
-    }), [dispatch]);
-
+const Form = ({dispatch, credit, payments, mobile, calculate}) => {
     return (
         <form id="form">
-            <Accordion name="accordion-details" title="Параметры кредита" defaultChecked={!mobile || credit.payments.length === 0}>
-                <FieldsParams credit={credit} onChange={onChange} />
+            <Accordion name="accordion-details" title="Параметры кредита" defaultChecked={!mobile || payments.length === 0}>
+                <FieldsParams credit={credit} dispatch={dispatch} />
             </Accordion>
 
             <div className="divider"/>
 
-            <Accordion name="accordion-payments" title="Досрочные погашения" defaultChecked={credit.payments.length !== 0}>
-                <FieldsPayments payments={credit.payments} onChange={onChange}/>
+            <Accordion name="accordion-payments" title="Досрочные погашения" defaultChecked={payments.length !== 0}>
+                <FieldsPayments payments={payments} dispatch={dispatch} />
             </Accordion>
 
             <div className="divider"/>
 
             <div id="calculate-button-wrapper" className="payment">
                 <div className="mr-2"/>
-                <Button large primary onClick={calculate} content="Рассчитать"/>
+                <Button large primary onClick={calculate} content="Рассчитать" />
             </div>
         </form>
     )

@@ -181,15 +181,15 @@ function calcDifferentiated({startDate, monthsNum, balance, percent, payments, p
     return data;
 }
 
-function calculate(credit) {
+function calculate(credit, payments) {
     if (!credit.sum || !credit.monthsNum || !credit.percent || !credit.startDate || !credit.paymentType ||
-        credit.payments.some(payment => !payment.startDate || !payment.sum))
+        payments.some(payment => !payment.startDate || !payment.sum))
         throw Error("Не все необходимые поля заполнены");
 
     let monthsNum = parseInt(credit.monthsNum, 10);
     let balance = parseInt(credit.sum, 10);
     const percent = parseFloat(credit.percent)/100;
-    const {startDate, payments, paymentType} = credit;
+    const {startDate, paymentType} = credit;
 
     const paymentDay = credit.paymentDay === 'issue_day' ? parseInt(startDate.slice(-2), 10)
         : credit.paymentDay === 'last_day_of_month' ? 31
@@ -200,10 +200,10 @@ function calculate(credit) {
         : calcDifferentiated({startDate, monthsNum, balance, percent, payments, paymentDay});
 }
 
-export default function(credit) {
+export default function(credit, payments) {
     const calculation = {};
     try {
-        calculation.data = calculate(credit);
+        calculation.data = calculate(credit, payments);
     } catch (error) {
         calculation.error = error;
     }

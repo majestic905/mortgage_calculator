@@ -20,28 +20,50 @@ import './App.scss';
   
 const reducer = (state, action) => {
     switch (action.type) {
+        case 'CHANGE_PAYMENT': {
+            const {id, name, value} = action.payload;
+            const payments = state.payments.slice();
+            payments[id] = {...payments[id], [name]: value};
+            return {...state, payments};
+        }
+        case 'REMOVE_PAYMENT': {
+            const id = action.payload.id;
+            const payments = state.payments.slice();
+            payments.splice(id, 1);
+            return {...state, payments};
+        }
+        case 'ADD_PAYMENT': {
+            const payments = state.payments.slice();
+            payments.push({
+                period: "0",
+                startDate: "",
+                nextPaymentType: "only_interest",
+                reduceType: "reduce_sum",
+                sum: "0"
+            });
+            return {...state, payments};
+        }
         case 'CHANGE_CREDIT': {
             const credit = {...state.credit, [action.payload.name]: action.payload.value};
             return {...state, credit};
         }
         case 'CALCULATE': {
-            const schedule = calculate(state.credit);
+            const schedule = calculate(state.credit, state.payments);
             return {...state, schedule, currentPage: "schedule"};
         }
         case 'SET_CURRENT_PAGE': {
             const page = action.payload.page;
-            const schedule = page === "schedule" ? calculate(state.credit) : state.schedule;
+            const schedule = page === "schedule" ? calculate(state.credit, state.payments) : state.schedule;
             return {...state, currentPage: page, schedule};
         }
         case 'SET_THEME':
             return {...state, theme: action.payload.theme};
         case 'LOGGED_IN': {
             if (!action.payload)
-                return state;
-            const credit = {...state.credit, ...action.payload.credit}; // firebase doesn't store empty arrays (payments = [])
-            const theme = action.payload.theme || state.theme;
-            const schedule = calculate(credit)
-            return {...state, theme, credit, schedule};
+                return state; // new use logged in, nothing saved, return default state
+            const newState = {...state, ...action.payload}; // action.payload is credit, payments, theme
+            const schedule = calculate(newState.credit, newState.payments)
+            return {...newState, schedule};
         }
         default:
             return state;
@@ -49,9 +71,6 @@ const reducer = (state, action) => {
 };
 
 const reducerInit = () => ({
-    theme: "light",
-    currentPage: "params",
-    layout: /iPhone|iPad|Android/i.test(navigator.userAgent) ? "mobile" : "desktop",
     credit: {
         sum: "1000000",
         monthsNum: "60",
@@ -59,13 +78,16 @@ const reducerInit = () => ({
         percent: "12.5",
         paymentType: "annuity",
         paymentDay: "issue_day",
-        payments: []
     },
+    payments: [],
+    theme: "light",
+    currentPage: "params",
+    layout: /iPhone|iPad|Android/i.test(navigator.userAgent) ? "mobile" : "desktop",
     schedule: {data: [], error: null}
 });
 
 const App = () => {
-    const [{theme, currentPage, layout, credit, schedule}, dispatch] = useReducer(reducer, null, reducerInit);
+    const [{theme, currentPage, layout, credit, payments, schedule}, dispatch] = useReducer(reducer, null, reducerInit);
     const {user, setTheme, setCredit, signIn, signOut} = useFirebase(dispatch);
 
     // we want to persist credit parameters after every successful calculation
@@ -88,7 +110,7 @@ const App = () => {
             <div id="mobile" className={`theme-${theme}`}>
                 <MobileNavigation currentPage={currentPage} navigateTo={navigateTo}/>
                 {currentPage === "params" && <ScreenParams credit={credit} dispatch={dispatch} calculate={calculate}/>}
-                {currentPage === "payments" && <ScreenPayments credit={credit} dispatch={dispatch} calculate={calculate}/>}
+                {currentPage === "payments" && <ScreenPayments payments={payments} dispatch={dispatch} calculate={calculate}/>}
                 {currentPage === "schedule" && <Schedule schedule={schedule}/>}
                 {currentPage === "settings" && <Settings theme={theme} setTheme={setTheme} signOut={signOut}/>}
             </div>
@@ -98,7 +120,7 @@ const App = () => {
     return (
         <div id="desktop" className="columns theme-light">
             <div className="column col-xl-12 col-6">
-                <Form credit={credit} dispatch={dispatch} calculate={calculate}/>
+                <Form credit={credit} payments={payments} dispatch={dispatch} calculate={calculate}/>
             </div>
             <div className="column col-xl-12 col-6">
                 <Schedule schedule={schedule}/>
