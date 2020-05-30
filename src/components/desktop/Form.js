@@ -1,10 +1,10 @@
 import React from 'react';
 
-import Button from "../shared/Button";
 import FieldsParams from "../shared/FieldsParams";
 import FieldsPayments from "../shared/FieldsPayments";
 
 import './Form.scss';
+import CalculateButton from "../shared/CalculateButton";
 
 
 const Accordion = ({name, title, defaultChecked, children}) => {
@@ -21,7 +21,7 @@ const Accordion = ({name, title, defaultChecked, children}) => {
     )
 };
 
-const Form = ({dispatch, credit, payments, mobile, calculate}) => {
+const Form = ({dispatch, credit, payments, mobile}) => {
     return (
         <form id="form">
             <Accordion name="accordion-details" title="Параметры кредита" defaultChecked={!mobile || payments.length === 0}>
@@ -38,7 +38,7 @@ const Form = ({dispatch, credit, payments, mobile, calculate}) => {
 
             <div id="calculate-button-wrapper" className="payment">
                 <div className="mr-2"/>
-                <Button large primary onClick={calculate} content="Рассчитать" />
+                <CalculateButton large primary dispatch={dispatch} />
             </div>
         </form>
     )

@@ -1,14 +1,14 @@
 import React from 'react';
 import FieldsPayments from '../shared/FieldsPayments';
-import Button from "../shared/Button";
+import CalculateButton from "../shared/CalculateButton";
 
 
-const ScreenParams = ({dispatch, payments, calculate}) => {
+const ScreenParams = ({dispatch, payments}) => {
     return (
         <div id="form">
             <FieldsPayments mobile payments={payments} dispatch={dispatch}/>
-            <Button block primary onClick={calculate} content="Рассчитать" />
-        </div>
+            <CalculateButton block primary dispatch={dispatch} />
+`        </div>
     )
 };
 

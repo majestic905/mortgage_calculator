@@ -1,23 +1,15 @@
-import React, {useEffect, useCallback, useReducer} from 'react';
-import useFirebase from "../hooks/useFirebase";
+import React, {useEffect, useReducer} from 'react';
+import useFirebase from "./hooks/useFirebase";
 
-import MobileNavigation from "./mobile/MobileNavigation";
-import ScreenParams from "./mobile/ScreenParams";
-import ScreenPayments from "./mobile/ScreenPayments";
+import Loading from "./components/shared/Loading"
+import SignInForm from "./components/shared/SignInForm";
+import Desktop from "./Desktop";
+import Mobile from "./Mobile";
 
-import Form from "./desktop/Form";
-
-import Schedule from './shared/Schedule';
-import Settings from "./shared/Settings"
-import SignInForm from "./shared/SignInForm";
-import Loading from "./shared/Loading"
-
-import calculate from "../utils/calculate";
+import calculate from "./utils/calculate";
 import './App.scss';
 
 
-// TODO: every month 10k extra payment with default values leads to negative reduce in regular payment
-  
 const reducer = (state, action) => {
     switch (action.type) {
         case 'CHANGE_PAYMENT': {
@@ -82,22 +74,24 @@ const reducerInit = () => ({
     payments: [],
     theme: "light",
     currentPage: "params",
-    layout: /iPhone|iPad|Android/i.test(navigator.userAgent) ? "mobile" : "desktop",
+    layout: /iPhone|Android/i.test(navigator.userAgent) ? "mobile" : "desktop",
     schedule: {data: [], error: null}
 });
 
 const App = () => {
     const [{theme, currentPage, layout, credit, payments, schedule}, dispatch] = useReducer(reducer, null, reducerInit);
-    const {user, setTheme, setCredit, signIn, signOut} = useFirebase(dispatch);
+    const {user, persistData, signIn, signOut} = useFirebase(dispatch);
 
     // we want to persist credit parameters after every successful calculation
     useEffect(() => {
         if (user /* logged in */ && !schedule.error)
-            setCredit(credit);
-    }, [schedule, user, setCredit]);
+            persistData({credit, payments});
+    }, [schedule, user, persistData]);
 
-    const navigateTo = useCallback((page) => dispatch({type: "SET_CURRENT_PAGE", payload: {page}}), []);
-    const calculate = useCallback(() => dispatch({type: 'CALCULATE'}), []);
+    useEffect(() => {
+        if (user)
+            persistData({theme});
+    }, [theme, user, persistData]);
 
     if (user === undefined)
         return <Loading />
@@ -106,26 +100,12 @@ const App = () => {
         return <SignInForm signIn={signIn}/>
 
     if (layout === "mobile") {
-        return (
-            <div id="mobile" className={`theme-${theme}`}>
-                <MobileNavigation currentPage={currentPage} navigateTo={navigateTo}/>
-                {currentPage === "params" && <ScreenParams credit={credit} dispatch={dispatch} calculate={calculate}/>}
-                {currentPage === "payments" && <ScreenPayments payments={payments} dispatch={dispatch} calculate={calculate}/>}
-                {currentPage === "schedule" && <Schedule schedule={schedule}/>}
-                {currentPage === "settings" && <Settings theme={theme} setTheme={setTheme} signOut={signOut}/>}
-            </div>
-        );
+        return <Mobile credit={credit} payments={payments} schedule={schedule} dispatch={dispatch}
+                       signOut={signOut} theme={theme} currentPage={currentPage} />;
     }
 
     return (
-        <div id="desktop" className="columns theme-light">
-            <div className="column col-xl-12 col-6">
-                <Form credit={credit} payments={payments} dispatch={dispatch} calculate={calculate}/>
-            </div>
-            <div className="column col-xl-12 col-6">
-                <Schedule schedule={schedule}/>
-            </div>
-        </div>
+        <Desktop credit={credit} payments={payments} schedule={schedule} dispatch={dispatch} />
     );
 }
 

@@ -1,8 +1,13 @@
-import React from "react";
+import React, {useCallback} from "react";
 import Button from "./Button";
 import './Settings.scss'
 
-const Settings = ({theme, setTheme, signOut}) => {
+const Settings = ({theme, dispatch, signOut}) => {
+    const setTheme = useCallback(
+        (theme) => dispatch({type: "SET_THEME", payload: {theme}}),
+        [dispatch]
+    );
+
     // TODO: change password, set up PIN, change PIN, discard PIN, set up FINGERPRINT, discard FINGERPRINT
     return (
         <div id="settings">

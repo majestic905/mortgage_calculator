@@ -1,8 +1,13 @@
-import React from "react";
+import React, {useCallback} from "react";
 import cx from "classnames";
 import './MobileNavigation.scss'
 
-const MobileNavigation = ({currentPage, navigateTo}) => {
+const MobileNavigation = ({currentPage, dispatch}) => {
+    const navigateTo = useCallback(
+        (page) => dispatch({type: "SET_CURRENT_PAGE", payload: {page}}),
+        [dispatch]
+    );
+
     const buttonParams = (path) => ({
         onClick: () => navigateTo(path),
         className: cx('btn btn-lg', {active: currentPage === path})

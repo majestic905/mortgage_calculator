@@ -35,15 +35,10 @@ export default (dispatch) => {
     const signIn = useCallback((email, password) => firebase.auth().signInWithEmailAndPassword(email, password), []);
     const signOut = useCallback(() => firebase.auth().signOut().catch(console.error), []);
 
-    const setTheme = useCallback(theme => {
-        firebase.database().ref(`/${user.uid}/theme`).set(theme)
-            .then(() => dispatch({type: 'SET_THEME', payload: {theme}}))
-            .catch(console.error);
-    }, [user, dispatch]);
-    const setCredit = useCallback(credit => {
-        firebase.database().ref(`/${user.uid}/credit`).set(credit)
+    const persistData = useCallback((data) => {
+        firebase.database().ref(`/${user.uid}`).update(data)
             .catch(console.error);
     }, [user]);
 
-    return {user, setTheme, setCredit, signIn, signOut};
+    return {user, persistData, signIn, signOut};
 }
