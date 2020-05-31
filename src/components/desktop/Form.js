@@ -4,7 +4,7 @@ import FieldsParams from "../shared/FieldsParams";
 import FieldsPayments from "../shared/FieldsPayments";
 
 import './Form.scss';
-import CalculateButton from "../shared/CalculateButton";
+import Button from "../shared/Button";
 
 
 const Accordion = ({name, title, defaultChecked, children}) => {
@@ -22,6 +22,10 @@ const Accordion = ({name, title, defaultChecked, children}) => {
 };
 
 const Form = ({dispatch, credit, payments, mobile}) => {
+    const calculate = React.useCallback(() => {
+        dispatch({type: 'SET_CURRENT_PAGE', payload: {page: "schedule"}});
+    }, [dispatch]);
+
     return (
         <form id="form">
             <Accordion name="accordion-details" title="Параметры кредита" defaultChecked={!mobile || payments.length === 0}>
@@ -38,10 +42,10 @@ const Form = ({dispatch, credit, payments, mobile}) => {
 
             <div id="calculate-button-wrapper" className="payment">
                 <div className="mr-2"/>
-                <CalculateButton large primary dispatch={dispatch} />
+                <Button large primary onClick={calculate} content="Рассчитать" />
             </div>
         </form>
     )
 };
 
-export default Form
+export default Form;

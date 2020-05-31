@@ -39,10 +39,6 @@ const reducer = (state, action) => {
             const credit = {...state.credit, [action.payload.name]: action.payload.value};
             return {...state, credit};
         }
-        case 'CALCULATE': {
-            const schedule = calculate(state.credit, state.payments);
-            return {...state, schedule, currentPage: "schedule"};
-        }
         case 'SET_CURRENT_PAGE': {
             const page = action.payload.page;
             const schedule = page === "schedule" ? calculate(state.credit, state.payments) : state.schedule;
