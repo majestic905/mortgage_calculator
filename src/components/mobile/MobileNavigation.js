@@ -10,7 +10,7 @@ const MobileNavigation = ({currentPage, dispatch}) => {
 
     const buttonParams = (path) => ({
         onClick: () => navigateTo(path),
-        className: cx('btn btn-lg', {active: currentPage === path})
+        className: cx('btn', {active: currentPage === path})
     });
 
     return (

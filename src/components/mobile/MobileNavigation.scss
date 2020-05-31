@@ -15,6 +15,7 @@
   color: #5F6368;
   font-size: 14px;
   height: 3rem;
+  padding: 0.35rem 0.4rem; // 0.4rem is really inherited from .btn
 
   &.active {
     box-shadow: none;
