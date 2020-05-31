@@ -1,0 +1,53 @@
+@import "styles/variables";
+@import "~spectre.css/src/mixins/shadow";
+
+#settings-panel {
+  @include shadow-variant(.05rem);
+  margin-bottom: 0.8rem;
+}
+
+#settings-toggle {
+  height: 0.8rem;
+  &:hover {
+    background-color: $secondary-color;
+  }
+  font-size: 0.5rem;
+}
+
+#desktop {
+  #settings {
+    padding: 0.5rem;
+  }
+}
+
+@media (min-width: $size-md) {
+  #desktop {
+    padding: 1rem;
+    max-width: 1920px;
+    margin: 0 auto;
+  }
+}
+
+@media (min-width: $size-xl) {
+  #settings, #form, #schedule {
+    overflow-y: scroll;
+  }
+
+  #schedule {
+    max-height: calc(100vh - 2rem);
+  }
+
+  #desktop > .column:first-child {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 2rem);
+  }
+
+  #settings {
+    flex: 0 1;
+  }
+
+  #form {
+    flex: 1 1 50%;
+  }
+}

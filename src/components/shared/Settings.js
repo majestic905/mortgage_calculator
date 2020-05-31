@@ -1,22 +1,30 @@
 import React, {useCallback} from "react";
 import Button from "./Button";
-import './Settings.scss'
 
-const Settings = ({theme, dispatch, signOut}) => {
-    const setTheme = useCallback(
-        (theme) => dispatch({type: "SET_THEME", payload: {theme}}),
+const Settings = ({settings, dispatch, signOut, mobile}) => {
+    const {theme, showPercentage} = settings;
+
+    const setSetting = useCallback(
+        (name, value) => dispatch({type: "SET_SETTING", payload: {name, value}}),
         [dispatch]
     );
 
     // TODO: change password, set up PIN, change PIN, discard PIN, set up FINGERPRINT, discard FINGERPRINT
     return (
         <div id="settings">
-            {/*<div className="form-group">*/}
-            {/*    <label className="form-switch">*/}
-            {/*        <input type="checkbox" checked={theme === "dark"} onChange={ev => setTheme(ev.target.checked ? "dark" : "light")}/>*/}
-            {/*        <i className="form-icon"/> Использовать темную тему*/}
-            {/*    </label>*/}
-            {/*</div>*/}
+            <div className="form-group">
+                <label className="form-switch">
+                    <input type="checkbox" checked={theme === "dark"} onChange={ev => setSetting('theme', ev.target.checked ? "dark" : "light")}/>
+                    <i className="form-icon"/> Использовать темную тему
+                </label>
+            </div>
+
+            <div className="form-group">
+                <label className="form-switch">
+                    <input type="checkbox" checked={showPercentage} onChange={ev => setSetting('showPercentage', ev.target.checked)}/>
+                    <i className="form-icon"/> Показывать прогресс (проценты) в таблице
+                </label>
+            </div>
 
             {/*<div className="form-group">*/}
             {/*    <button type="button" className="btn mt-2 btn-lg btn-block">*/}
@@ -39,8 +47,10 @@ const Settings = ({theme, dispatch, signOut}) => {
             {/*    </button>*/}
             {/*</div>*/}
 
+            <div className="divider" />
+
             <div className="form-group">
-                <Button primary large block onClick={signOut} content="Выйти" />
+                <Button primary large={mobile} block={mobile} onClick={signOut} content="Выйти" />
             </div>
         </div>
     );

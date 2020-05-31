@@ -1,0 +1,11 @@
+// Variables
+
+$base-font-family: 'Roboto', sans-serif;
+
+$primary-color: #AA1E46;
+$secondary-color: lighten($primary-color, 47.5%);
+
+$size-lg: 1080px;
+$size-xl: 1520px;
+
+@import "node_modules/spectre.css/src/variables";

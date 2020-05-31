@@ -44,8 +44,12 @@ const reducer = (state, action) => {
             const schedule = page === "schedule" ? calculate(state.credit, state.payments) : state.schedule;
             return {...state, currentPage: page, schedule};
         }
-        case 'SET_THEME':
-            return {...state, theme: action.payload.theme};
+        case 'SET_SETTING': {
+            const {name, value} = action.payload;
+            const settings = {...state.settings, [name]: value}
+            console.log(settings);
+            return {...state, settings};
+        }
         case 'LOGGED_IN': {
             if (!action.payload)
                 return state; // new use logged in, nothing saved, return default state
@@ -58,24 +62,31 @@ const reducer = (state, action) => {
     }
 };
 
-const reducerInit = () => ({
-    credit: {
-        sum: "1000000",
-        monthsNum: "60",
-        startDate: "2019-01-10",
-        percent: "12.5",
-        paymentType: "annuity",
-        paymentDay: "issue_day",
-    },
-    payments: [],
-    theme: "light",
-    currentPage: "params",
-    layout: /iPhone|Android/i.test(navigator.userAgent) ? "mobile" : "desktop",
-    schedule: {data: [], error: null}
-});
+const reducerInit = () => {
+    const isPhone = /iPhone|Android/i.test(navigator.userAgent);
+
+    return ({
+        credit: {
+            sum: "1000000",
+            monthsNum: "60",
+            startDate: "2019-01-10",
+            percent: "12.5",
+            paymentType: "annuity",
+            paymentDay: "issue_day",
+        },
+        payments: [],
+        settings: {
+            theme: "light",
+            showPercentage: true,
+        },
+        currentPage: "params",
+        layout: isPhone ? "mobile" : "desktop",
+        schedule: {data: [], error: null}
+    });
+};
 
 const App = () => {
-    const [{theme, currentPage, layout, credit, payments, schedule}, dispatch] = useReducer(reducer, null, reducerInit);
+    const [{settings, currentPage, layout, credit, payments, schedule}, dispatch] = useReducer(reducer, null, reducerInit);
     const {user, persistData, signIn, signOut} = useFirebase(dispatch);
 
     // we want to persist credit parameters after every successful calculation
@@ -86,8 +97,8 @@ const App = () => {
 
     useEffect(() => {
         if (user)
-            persistData({theme});
-    }, [theme, user, persistData]);
+            persistData({settings});
+    }, [settings, user, persistData]);
 
     if (user === undefined)
         return <Loading />
@@ -97,11 +108,11 @@ const App = () => {
 
     if (layout === "mobile") {
         return <Mobile credit={credit} payments={payments} schedule={schedule} dispatch={dispatch}
-                       signOut={signOut} theme={theme} currentPage={currentPage} />;
+                       signOut={signOut} settings={settings} currentPage={currentPage} />;
     }
 
     return (
-        <Desktop credit={credit} payments={payments} schedule={schedule} dispatch={dispatch} />
+        <Desktop credit={credit} payments={payments} schedule={schedule} dispatch={dispatch} settings={settings} signOut={signOut} />
     );
 }
 

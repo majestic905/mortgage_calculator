@@ -1,6 +1,6 @@
 import React, {useCallback} from "react";
 import cx from "classnames";
-import './MobileNavigation.scss'
+
 
 const MobileNavigation = ({currentPage, dispatch}) => {
     const navigateTo = useCallback(

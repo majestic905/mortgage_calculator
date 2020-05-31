@@ -72,13 +72,31 @@ const RemoveButton = ({mobile, paymentIndex, onClick}) => {
 };
 
 const AddButton = ({block, onClick}) => {
-    const className = cx("btn", {"btn-block": block});
+    const className = cx("btn mb-2", {"btn-block": block});
     return (
         <button type="button" className={className} onClick={onClick}>
             <i className="icon icon-plus"/> Добавить досрочный платеж
         </button>
     )
 };
+
+const Payment = ({i, payment, changePayment, removePayment, mobile}) => {
+    return (
+        <div className="payment">
+            <div className="mr-2">{i+1}.</div>
+            <div className="columns col-gapless">
+                <Period index={i} value={payment.period} onChange={changePayment}/>
+                <StartDate index={i} value={payment.startDate} onChange={changePayment}/>
+                <Sum index={i} value={payment.sum} onChange={changePayment}/>
+                <ReduceType index={i} value={payment.reduceType} onChange={changePayment}/>
+                <NextPaymentType index={i} value={payment.nextPaymentType} onChange={changePayment} removePayment={removePayment}/>
+            </div>
+            <div className="ml-2">
+                <RemoveButton mobile={mobile} onClick={removePayment} paymentIndex={i}/>
+            </div>
+        </div>
+    );
+}
 
 const FieldsPayments = React.memo(({payments, mobile, dispatch}) => {
     const [keys, setKeys] = useState(() => payments.map(key));
@@ -87,11 +105,13 @@ const FieldsPayments = React.memo(({payments, mobile, dispatch}) => {
         dispatch({type: 'ADD_PAYMENT'});
         setKeys(keys => [...keys, key()]);
     }, [dispatch, setKeys]);
+
     const removePayment = useCallback(ev => {
         const id = parseInt(ev.currentTarget.dataset.id, 10);
         dispatch({type: 'REMOVE_PAYMENT', payload: {id}});
         setKeys(keys => keys.filter((_, i) => i !== id));
     }, [dispatch, setKeys]);
+
     const changePayment = useCallback(ev => {
         const [, i, name] = ev.target.name.split('.');
         const id = parseInt(i, 10);
@@ -101,25 +121,14 @@ const FieldsPayments = React.memo(({payments, mobile, dispatch}) => {
 
     return (
         <React.Fragment>
-            {payments.map((payment, i) =>
-                <div key={keys[i]} className="payment">
-                    <div className="mr-2">{i+1}.</div>
-                    <div className="columns col-gapless">
-                        <Period index={i} value={payment.period} onChange={changePayment}/>
-                        <StartDate index={i} value={payment.startDate} onChange={changePayment}/>
-                        <Sum index={i} value={payment.sum} onChange={changePayment}/>
-                        <ReduceType index={i} value={payment.reduceType} onChange={changePayment}/>
-                        <NextPaymentType index={i} value={payment.nextPaymentType} onChange={changePayment} removePayment={removePayment}/>
-                    </div>
-                    <div className="ml-2">
-                        <RemoveButton mobile={mobile} onClick={removePayment} paymentIndex={i}/>
-                    </div>
-                </div>
-            )}
             <div className="payment">
                 <div className="mr-2"/>
                 <AddButton block={mobile} onClick={addPayment}/>
             </div>
+            {payments.map((payment, i) =>
+                <Payment key={keys[i]} i={i} payment={payment} changePayment={changePayment}
+                         removePayment={removePayment} mobile={mobile} />
+            ).reverse()}
         </React.Fragment>
     )
 });

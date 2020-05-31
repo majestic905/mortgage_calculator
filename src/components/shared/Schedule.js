@@ -117,9 +117,7 @@ const Table = ({data, showPercentage, totals}) => {
     )
 };
 
-const Schedule = React.memo(({schedule: {error, data}}) => {
-    const [showPercentage, setShowPercentage] = React.useState(true);
-
+const Schedule = React.memo(({schedule: {error, data}, showPercentage}) => {
     if (error)
         return (
             <div id="error" className="toast toast-error">
@@ -145,13 +143,6 @@ const Schedule = React.memo(({schedule: {error, data}}) => {
     return (
         <div id="schedule">
             <Totals totals={totals} />
-
-            <div className="divider"/>
-
-            <label className="form-switch">
-                <input type="checkbox" checked={showPercentage} onChange={ev => setShowPercentage(ev.target.checked)}/>
-                <i className="form-icon"/> Показывать прогресс
-            </label>
 
             <div className="divider"/>
 

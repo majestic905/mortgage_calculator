@@ -34,16 +34,16 @@ const Form = ({dispatch, credit, payments, mobile}) => {
 
             <div className="divider"/>
 
-            <Accordion name="accordion-payments" title="Досрочные погашения" defaultChecked={payments.length !== 0}>
-                <FieldsPayments payments={payments} dispatch={dispatch} />
-            </Accordion>
-
-            <div className="divider"/>
-
             <div id="calculate-button-wrapper" className="payment">
                 <div className="mr-2"/>
                 <Button large primary onClick={calculate} content="Рассчитать" />
             </div>
+
+            <div className="divider"/>
+
+            <Accordion name="accordion-payments" title="Досрочные погашения" defaultChecked={payments.length !== 0}>
+                <FieldsPayments payments={payments} dispatch={dispatch} />
+            </Accordion>
         </form>
     )
 };

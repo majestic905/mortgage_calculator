@@ -80,7 +80,7 @@ const PaymentDay = ({value, onChange}) => {
                 <label className="form-label" htmlFor="paymentDay">Ежемесячные платежи</label>
             </div>
             <div className="col-8 col-sm-12">
-                <select name="paymentDay" className="form-select" value={value} onChange={onChange}>
+                <select id="paymentDay" name="paymentDay" className="form-select" value={value} onChange={onChange}>
                     <option value="issue_day">в день выдачи кредита</option>
                     <option value="last_day_of_month">в последний день месяца</option>
                     {Array.from({length: 28}, (_, i) =>

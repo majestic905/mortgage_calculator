@@ -1,43 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap&subset=cyrillic');
-$base-font-family: 'Roboto', sans-serif;
-
-$primary-color: #AA1E46;
-$secondary-color: lighten($primary-color, 47.5%);
-
-$size-lg: 1080px;
-$size-xl: 1520px;
-
-// Variables and mixins
-@import "node_modules/spectre.css/src/variables";
-@import "node_modules/spectre.css/src/mixins";
-
-// Reset and dependencies
-@import "node_modules/spectre.css/src/normalize";
-@import "node_modules/spectre.css/src/base";
-
-// Elements
-@import "node_modules/spectre.css/src/typography";
-@import "node_modules/spectre.css/src/tables";
-@import "node_modules/spectre.css/src/buttons";
-@import "node_modules/spectre.css/src/forms";
-@import "node_modules/spectre.css/src/accordions";
-
-// Layout
-@import "node_modules/spectre.css/src/layout";
-
-// Components
-@import "node_modules/spectre.css/src/toasts";
-@import "node_modules/spectre.css/src/tooltips";
-@import "node_modules/spectre.css/src/tiles";
-
-// Utility classes
-@import "node_modules/spectre.css/src/animations";
-@import "node_modules/spectre.css/src/utilities";
-
-// Icons
-@import "node_modules/spectre.css/src/icons/icons-core";
-@import "node_modules/spectre.css/src/icons/icons-navigation";
-@import "node_modules/spectre.css/src/icons/icons-action";
+@import 'styles/variables';
+@import 'styles/spectre-custom';
 
 // -----------------------------------------------
 
@@ -45,21 +8,19 @@ $size-xl: 1520px;
 //  height: 100%;
 //}
 
-#mobile {
-  padding-bottom: 3rem;
+#loading {
+  position: absolute;
+  top: 50%;
+  margin-top: -0.8rem;
+  left: 50%;
 }
 
-@media (min-width: $size-md) {
-  #desktop {
-    padding: 1rem;
-    max-width: 1920px;
-    margin: 0 auto;
-  }
-}
+#sign-in-form {
+  padding: 1rem;
+  margin: 2rem auto;
+  max-width: 22rem;
 
-@media (min-width: $size-xl) {
-  #form, #schedule {
-    height: calc(100vh - 2rem);
-    overflow-y: scroll;
+  .form-group:last-child {
+    margin-top: 2rem;
   }
 }

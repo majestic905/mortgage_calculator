@@ -1,0 +1,66 @@
+@import "styles/variables";
+
+#mobile {
+  padding-bottom: 3rem;
+}
+
+#mobile {
+  #settings {
+    margin: 3rem 1rem 1rem 1rem;
+
+    //.form-group:first-child {
+    //  margin-bottom: 2rem;
+    //}
+    //
+    //.form-group:not(:first-child) {
+    //  margin-bottom: 1rem;
+    //}
+    //
+    //.form-group:last-child {
+    //  margin-top: 2rem;
+    //}
+
+    //.material-icons {
+    //  width: 1em;
+    //  height: 1em;
+    //  vertical-align: -20%;
+    //  margin-right: .2rem;
+    //}
+
+    button:focus {
+      box-shadow: none;
+    }
+  }
+}
+
+#navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+  box-shadow: 0 -0.1rem 0.2rem #eeeeee;
+}
+
+#navigation button {
+  background-color: rgba(255, 255, 255, 0.95);
+  border: none;
+  color: #5F6368;
+  font-size: 14px;
+  height: 3rem;
+  padding: 0.35rem 0.4rem; // 0.4rem is really inherited from .btn
+
+  &.active {
+    box-shadow: none;
+    color: #1A73E8;
+  }
+
+  span {
+    display: block;
+  }
+}
+
+//@import "~spectre.css/src/mixins";
+//.btn-blue {
+//  @include button-variant(#1A73E8);
+//}
