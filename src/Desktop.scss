@@ -8,7 +8,7 @@
 
 #settings-toggle {
   height: 0.8rem;
-  &:hover {
+  &:hover, &.active {
     background-color: $secondary-color;
   }
   font-size: 0.5rem;

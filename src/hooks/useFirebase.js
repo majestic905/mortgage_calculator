@@ -35,10 +35,18 @@ export default (dispatch) => {
     const signIn = useCallback((email, password) => firebase.auth().signInWithEmailAndPassword(email, password), []);
     const signOut = useCallback(() => firebase.auth().signOut().catch(console.error), []);
 
+    const changePassword = useCallback((password, newPassword) => {
+        const user = firebase.auth().currentUser;
+        const credential = firebase.auth.EmailAuthProvider.credential(user.email, password);
+        return user.reauthenticateWithCredential(credential)
+            .then(() => user.updatePassword(newPassword))
+            .then(signOut)
+    }, [signOut]);
+
     const persistData = useCallback((data) => {
         firebase.database().ref(`/${user.uid}`).update(data)
             .catch(console.error);
     }, [user]);
 
-    return {user, persistData, signIn, signOut};
+    return {user, persistData, signIn, signOut, changePassword};
 }

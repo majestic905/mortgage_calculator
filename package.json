@@ -1,6 +1,6 @@
 {
   "name": "mortgage_calculator",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "author": "majestic905@gmail.com",
   "private": true,
   "dependencies": {

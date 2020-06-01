@@ -46,8 +46,7 @@ const reducer = (state, action) => {
         }
         case 'SET_SETTING': {
             const {name, value} = action.payload;
-            const settings = {...state.settings, [name]: value}
-            console.log(settings);
+            const settings = {...state.settings, [name]: value};
             return {...state, settings};
         }
         case 'LOGGED_IN': {
@@ -87,7 +86,9 @@ const reducerInit = () => {
 
 const App = () => {
     const [{settings, currentPage, layout, credit, payments, schedule}, dispatch] = useReducer(reducer, null, reducerInit);
-    const {user, persistData, signIn, signOut} = useFirebase(dispatch);
+
+    const fb = useFirebase(dispatch);
+    const {user, persistData} = fb;
 
     // we want to persist credit parameters after every successful calculation
     useEffect(() => {
@@ -104,16 +105,12 @@ const App = () => {
         return <Loading />
 
     if (user === null)
-        return <SignInForm signIn={signIn}/>
+        return <SignInForm signIn={fb.signIn}/>
 
-    if (layout === "mobile") {
-        return <Mobile credit={credit} payments={payments} schedule={schedule} dispatch={dispatch}
-                       signOut={signOut} settings={settings} currentPage={currentPage} />;
-    }
-
-    return (
-        <Desktop credit={credit} payments={payments} schedule={schedule} dispatch={dispatch} settings={settings} signOut={signOut} />
-    );
+    const props = {credit, payments, schedule, settings, dispatch, fb};
+    if (layout === "mobile")
+        return <Mobile {...props} currentPage={currentPage} />;
+    return <Desktop {...props} />;
 }
 
 export default App;

@@ -1,5 +1,6 @@
 import React, {useState, useCallback} from 'react';
-import cx from "classnames";
+import InputField from "./InputField";
+import Button from "./Button";
 
 
 const SignInForm = ({signIn}) => {
@@ -23,17 +24,11 @@ const SignInForm = ({signIn}) => {
 
     return (
         <form id="sign-in-form" onSubmit={doSubmit}>
-            <div className='form-group'>
-                <label htmlFor='email' className='form-label label-lg'>Email</label>
-                <input type='email' className='form-input input-lg' name='email' id='email' autoFocus required/>
-            </div>
-            <div className='form-group'>
-                <label htmlFor='password' className='form-label label-lg'>Пароль</label>
-                <input type='password' className='form-input input-lg' name='password' id='password' required/>
-            </div>
+            <InputField type="email" name="email" large label="Email" inputProps={{autoFocus: true, required: true}}/>
+            <InputField type="password" name="password" large label="Пароль"/>
             <div className='form-group'>
                 {errorMessage && <div className="toast toast-error mb-2">{errorMessage}</div>}
-                <button type="submit" className={cx("btn btn-lg btn-primary btn-block", {loading: isLoading})}>Войти</button>
+                <Button type="submit" large primary block loading={isLoading} content="Войти"/>
             </div>
         </form>
     )

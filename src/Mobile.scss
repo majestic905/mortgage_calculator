@@ -6,30 +6,43 @@
 
 #mobile {
   #settings {
-    margin: 3rem 1rem 1rem 1rem;
+    padding: 1rem 0;
 
-    //.form-group:first-child {
-    //  margin-bottom: 2rem;
-    //}
-    //
-    //.form-group:not(:first-child) {
-    //  margin-bottom: 1rem;
-    //}
-    //
-    //.form-group:last-child {
-    //  margin-top: 2rem;
-    //}
-
-    //.material-icons {
-    //  width: 1em;
-    //  height: 1em;
-    //  vertical-align: -20%;
-    //  margin-right: .2rem;
-    //}
-
-    button:focus {
-      box-shadow: none;
+    > .form-group {
+      margin: 0;
+      border-top: 1px solid $border-color;
+      &:last-of-type {
+        border-bottom: 1px solid $border-color;
+      }
     }
+
+    .tile {
+      min-height: 2.4rem;
+      padding: 0.6rem;
+    }
+
+    .form-switch {
+      min-height: 2.4rem;
+      padding: 0.6rem 0.6rem 0.6rem 2.4rem;
+      .form-icon {
+        left: 0.4rem;
+        top: 0.7rem;
+      }
+    }
+
+    .material-icons {
+      width: 1em;
+      height: 1em;
+      vertical-align: -20%;
+      margin-right: .2rem;
+    }
+  }
+}
+
+#change-password-form {
+  padding: 1rem;
+  .mt-3 {
+    margin-top: $unit-2 * 3;
   }
 }
 
